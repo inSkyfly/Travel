@@ -10,7 +10,11 @@ interface AgentRepository {
     suspend fun generatePlan(request: TripRequest): TripPlan
     fun getChatMessages(): Flow<List<ChatMessage>>
     suspend fun sendUserMessage(message: String): ChatMessage
-    suspend fun resetChat()
+    /** 进入对话页时调用：恢复本地历史，若无历史则展示欢迎语 */
+    suspend fun ensureChatInitialized()
+
+    /** 用户主动开启新对话：清空历史并重新会话 */
+    suspend fun startNewConversation()
     fun getPartialRequest(): Flow<TripRequest?>
     suspend fun isRequestComplete(): Boolean
     suspend fun buildRequestFromChat(): TripRequest?

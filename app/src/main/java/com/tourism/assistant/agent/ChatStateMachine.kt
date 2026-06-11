@@ -1,5 +1,6 @@
 package com.tourism.assistant.agent
 
+import com.tourism.assistant.data.local.TripRequestBuilderSnapshot
 import com.tourism.assistant.domain.TripRequestBuilder
 import com.tourism.assistant.domain.model.BudgetLevel
 import com.tourism.assistant.domain.model.Preference
@@ -163,6 +164,18 @@ class ChatStateMachine(
             }
             append("点击下方「生成行程」即可查看完整规划。")
         }
+    }
+
+    fun exportPreferenceBuffer(): Set<Preference> = preferenceBuffer.toSet()
+
+    fun restore(
+        stepName: String,
+        preferences: List<Preference>,
+        builderSnapshot: TripRequestBuilderSnapshot
+    ) {
+        step = runCatching { ChatStep.valueOf(stepName) }.getOrDefault(ChatStep.GREETING)
+        preferenceBuffer = preferences.toMutableSet()
+        builderSnapshot.applyTo(builder)
     }
 
     fun reset() {

@@ -43,16 +43,8 @@ class ChatViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            agentRepository.resetChat()
-            val hint = when {
-                !BuildConfig.USE_REMOTE_AI -> "AI 模式：本地 Mock（USE_REMOTE_AI=false）"
-                agentRepository is RemoteAgentRepository && agentRepository.isUsingRemoteBackend() ->
-                    "AI 模式：云端 RAG + 大模型（${BuildConfig.API_BASE_URL}）"
-                agentRepository is RemoteAgentRepository ->
-                    agentRepository.getLastConnectionError() ?: "AI 模式：已降级 Mock"
-                else -> "AI 模式：本地 Mock"
-            }
-            _uiState.value = _uiState.value.copy(aiBackendHint = hint)
+            agentRepository.ensureChatInitialized()
+            _uiState.value = _uiState.value.copy(aiBackendHint = buildBackendHint())
         }
         viewModelScope.launch {
             messages.collect { list ->
@@ -89,6 +81,31 @@ class ChatViewModel @Inject constructor(
 
     fun onInputChange(value: String) {
         _uiState.value = _uiState.value.copy(input = value)
+    }
+
+    fun startNewConversation() {
+        if (_uiState.value.isReplying) return
+        viewModelScope.launch {
+            agentRepository.startNewConversation()
+            _uiState.value = _uiState.value.copy(
+                input = "",
+                isComplete = false,
+                error = null,
+                aiBackendHint = buildBackendHint()
+            )
+        }
+    }
+
+    private fun buildBackendHint(): String {
+        return when {
+            !BuildConfig.USE_REMOTE_AI -> "AI 模式：本地 Mock（USE_REMOTE_AI=false）"
+            agentRepository is RemoteAgentRepository &&
+                (agentRepository.isUsingRemoteBackend() || agentRepository.hasPersistedSession()) ->
+                "AI 模式：云端 RAG + 大模型（${BuildConfig.API_BASE_URL}）"
+            agentRepository is RemoteAgentRepository ->
+                agentRepository.getLastConnectionError() ?: "AI 模式：已降级 Mock"
+            else -> "AI 模式：本地 Mock"
+        }
     }
 
     fun sendMessage() {

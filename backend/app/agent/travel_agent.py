@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import uuid
 from dataclasses import dataclass, field
+from collections.abc import Iterator
 from typing import Any
 
 from app.llm.client import llm_client
@@ -53,6 +54,66 @@ class TravelAgent:
             reply += "\n\n需求已收集完成，请点击「生成行程」。"
         session.messages.append({"role": "assistant", "content": reply})
         return self._response(session_id, session, reply)
+
+    def chat_stream(self, session_id: str, user_message: str) -> Iterator[dict[str, Any]]:
+        session = self.sessions.get(session_id)
+        if session is None:
+            session_id, greeting = self.reset(session_id)
+            session = self.sessions[session_id]
+            if not user_message.strip():
+                yield {"type": "analysis", "delta": "🔍 准备会话\n"}
+                yield {"type": "content", "delta": greeting}
+                yield {
+                    "type": "done",
+                    "content": greeting,
+                    "session_id": session_id,
+                    "is_complete": False,
+                }
+                return
+
+        session.messages.append({"role": "user", "content": user_message})
+        self._extract_entities(session, user_message)
+
+        yield {"type": "analysis", "delta": "🔍 正在理解您的问题\n"}
+
+        query = user_message
+        if session.destination:
+            query = f"{session.destination} {user_message}"
+
+        yield {"type": "analysis", "delta": "📚 正在检索相关资料…\n"}
+        rag_context = rag_store.build_context(
+            query, destination=session.destination or user_message
+        )
+        if rag_context.strip():
+            snippet_count = rag_context.count("[")
+            yield {
+                "type": "analysis",
+                "delta": f"✅ 已检索到参考资料（约 {snippet_count} 条片段）\n",
+            }
+        else:
+            yield {"type": "analysis", "delta": "ℹ️ 未找到匹配资料，将基于通用知识回答\n"}
+
+        yield {"type": "analysis", "delta": "📝 正在生成回答…\n"}
+
+        raw_reply = ""
+        for delta in llm_client.chat_stream(session.messages, rag_context=rag_context):
+            raw_reply += delta
+            yield {"type": "content", "delta": delta}
+
+        reply = raw_reply
+        if "[[COMPLETE]]" in reply:
+            session.is_complete = True
+            reply = reply.replace("[[COMPLETE]]", "").strip()
+            reply += "\n\n需求已收集完成，请点击「生成行程」。"
+
+        session.messages.append({"role": "assistant", "content": reply})
+        meta = self._response(session_id, session, reply)
+        yield {
+            "type": "done",
+            "content": reply,
+            "session_id": session_id,
+            "is_complete": meta["is_complete"],
+        }
 
     def _response(self, session_id: str, session: ChatSession, reply: str) -> dict[str, Any]:
         return {

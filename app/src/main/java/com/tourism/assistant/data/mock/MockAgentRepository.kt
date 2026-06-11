@@ -1,6 +1,9 @@
 package com.tourism.assistant.data.mock
 
 import com.tourism.assistant.agent.ChatStateMachine
+import com.tourism.assistant.data.local.ChatSessionLocalStore
+import com.tourism.assistant.data.local.ChatSessionState
+import com.tourism.assistant.data.local.TripRequestBuilderSnapshot
 import com.tourism.assistant.domain.model.AttractionRec
 import com.tourism.assistant.domain.model.BudgetInput
 import com.tourism.assistant.domain.model.BudgetLevel
@@ -31,12 +34,14 @@ import javax.inject.Singleton
 @Singleton
 class MockAgentRepository @Inject constructor(
     private val ragRepository: RagRepository,
-    private val weatherRepository: WeatherRepository
+    private val weatherRepository: WeatherRepository,
+    private val chatSessionStore: ChatSessionLocalStore
 ) : AgentRepository {
 
     private val chatStateMachine = ChatStateMachine()
     private val messages = MutableStateFlow<List<ChatMessage>>(emptyList())
     private var messageId = 0L
+    private var memoryInitialized = false
 
     override suspend fun generatePlan(request: TripRequest): TripPlan {
         val attractions = filterAttractions(
@@ -89,10 +94,35 @@ class MockAgentRepository @Inject constructor(
 
     override fun getChatMessages(): Flow<List<ChatMessage>> = messages.asStateFlow()
 
+    override suspend fun ensureChatInitialized() {
+        if (memoryInitialized) return
+        memoryInitialized = true
+
+        val saved = chatSessionStore.load()
+        if (saved != null && saved.messages.isNotEmpty()) {
+            restoreFromState(saved)
+            return
+        }
+        startNewConversationInternal(persist = true)
+    }
+
+    override suspend fun startNewConversation() {
+        chatSessionStore.clear()
+        startNewConversationInternal(persist = true)
+    }
+
+    /** 云端仓库重置会话时同步本地 Mock 状态，不写入持久化 */
+    internal fun resetForFallback() {
+        chatStateMachine.reset()
+        messageId = 0L
+    }
+
     override suspend fun sendUserMessage(message: String): ChatMessage {
+        if (!memoryInitialized) ensureChatInitialized()
+
         val userMsg = ChatMessage(++messageId, message, isFromAgent = false)
         val agentId = ++messageId
-        val (reply, dialogComplete) = chatStateMachine.processInput(message)
+        val (reply, _) = chatStateMachine.processInput(message)
 
         messages.value = messages.value + userMsg + ChatMessage(
             id = agentId,
@@ -101,6 +131,7 @@ class MockAgentRepository @Inject constructor(
             isStreaming = true,
             isAnalysisExpanded = true
         )
+        persistState()
 
         ChatStreamRenderer.streamReply(
             analysisLines = listOf(
@@ -130,6 +161,7 @@ class MockAgentRepository @Inject constructor(
             isAnalysisExpanded = false
         )
         messages.value = messages.value.map { if (it.id == agentId) finalMsg else it }
+        persistState()
         return finalMsg
     }
 
@@ -137,12 +169,39 @@ class MockAgentRepository @Inject constructor(
         messages.value = messages.value.map { if (it.id == id) transform(it) else it }
     }
 
-    override suspend fun resetChat() {
+    private suspend fun startNewConversationInternal(persist: Boolean) {
         chatStateMachine.reset()
         messageId = 0L
         val greeting = chatStateMachine.startConversation()
         messages.value = listOf(
             ChatMessage(++messageId, greeting, isFromAgent = true)
+        )
+        if (persist) persistState()
+    }
+
+    private fun restoreFromState(state: ChatSessionState) {
+        messageId = state.nextMessageId
+        messages.value = state.messages.map { msg ->
+            if (msg.isStreaming) {
+                msg.copy(isStreaming = false, isAnalysisExpanded = false)
+            } else {
+                msg
+            }
+        }
+        chatStateMachine.restore(state.chatStep, state.preferenceBuffer, state.builder)
+    }
+
+    private suspend fun persistState() {
+        chatSessionStore.save(
+            ChatSessionState(
+                sessionId = null,
+                messages = messages.value,
+                nextMessageId = messageId,
+                chatStep = chatStateMachine.currentStep().name,
+                preferenceBuffer = chatStateMachine.exportPreferenceBuffer().toList(),
+                builder = TripRequestBuilderSnapshot.from(chatStateMachine.getBuilder()),
+                remoteDialogComplete = chatStateMachine.isDialogComplete()
+            )
         )
     }
 

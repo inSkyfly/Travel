@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+import json
+from collections.abc import Iterator
 from typing import Any
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
 from app.agent.travel_agent import travel_agent
@@ -62,6 +65,30 @@ def chat(body: ChatRequest) -> dict[str, Any]:
     if not session_id:
         session_id, _ = travel_agent.reset()
     return travel_agent.chat(session_id, body.message)
+
+
+def _sse_line(event: dict[str, Any]) -> str:
+    return f"data: {json.dumps(event, ensure_ascii=False)}\n\n"
+
+
+@app.post("/api/v1/chat/stream")
+def chat_stream(body: ChatRequest) -> StreamingResponse:
+    session_id = body.session_id
+    if not session_id:
+        session_id, _ = travel_agent.reset()
+
+    def event_generator() -> Iterator[str]:
+        for event in travel_agent.chat_stream(session_id, body.message):
+            yield _sse_line(event)
+
+    return StreamingResponse(
+        event_generator(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no",
+        },
+    )
 
 
 @app.post("/api/v1/plan/generate")

@@ -1,6 +1,9 @@
 package com.tourism.assistant.data.remote
 
 import com.tourism.assistant.agent.ChatStateMachine
+import com.tourism.assistant.data.local.ChatSessionLocalStore
+import com.tourism.assistant.data.local.ChatSessionState
+import com.tourism.assistant.data.local.TripRequestBuilderSnapshot
 import com.tourism.assistant.data.mock.MockAgentRepository
 import com.tourism.assistant.data.remote.dto.ChatResetRequestDto
 import com.tourism.assistant.domain.model.ChatMessage
@@ -20,7 +23,8 @@ import javax.inject.Singleton
 class RemoteAgentRepository @Inject constructor(
     private val streamClient: ChatStreamClient,
     private val api: TravelApiService,
-    private val mockFallback: MockAgentRepository
+    private val mockFallback: MockAgentRepository,
+    private val chatSessionStore: ChatSessionLocalStore
 ) : AgentRepository {
 
     private val messages = MutableStateFlow<List<ChatMessage>>(emptyList())
@@ -31,9 +35,11 @@ class RemoteAgentRepository @Inject constructor(
     private var lastRemoteSuccess = false
     private var remoteDialogComplete = false
     private var lastConnectionError: String? = null
+    private var memoryInitialized = false
 
     fun isUsingRemoteBackend(): Boolean = preferRemote && lastRemoteSuccess
     fun getLastConnectionError(): String? = lastConnectionError
+    fun hasPersistedSession(): Boolean = sessionId != null || messages.value.isNotEmpty()
 
     override suspend fun generatePlan(request: TripRequest): TripPlan {
         if (preferRemote) {
@@ -47,7 +53,26 @@ class RemoteAgentRepository @Inject constructor(
 
     override fun getChatMessages(): Flow<List<ChatMessage>> = messages.asStateFlow()
 
+    override suspend fun ensureChatInitialized() {
+        if (memoryInitialized) return
+        memoryInitialized = true
+
+        val saved = chatSessionStore.load()
+        if (saved != null && saved.messages.isNotEmpty()) {
+            restoreFromState(saved)
+            return
+        }
+        startNewConversationInternal(persist = true)
+    }
+
+    override suspend fun startNewConversation() {
+        chatSessionStore.clear()
+        startNewConversationInternal(persist = true)
+    }
+
     override suspend fun sendUserMessage(message: String): ChatMessage {
+        if (!memoryInitialized) ensureChatInitialized()
+
         val (reply, dialogComplete) = localState.processInput(message)
 
         val userMsg = ChatMessage(++messageId, message, isFromAgent = false)
@@ -59,6 +84,7 @@ class RemoteAgentRepository @Inject constructor(
             isStreaming = true,
             isAnalysisExpanded = true
         )
+        persistState()
 
         if (preferRemote) {
             try {
@@ -106,6 +132,7 @@ class RemoteAgentRepository @Inject constructor(
         }
         lastRemoteSuccess = true
         lastConnectionError = null
+        persistState()
         return messages.value.last { it.id == agentId }
     }
 
@@ -163,6 +190,7 @@ class RemoteAgentRepository @Inject constructor(
         val analysisText = messages.value.find { it.id == agentId }?.analysisText.orEmpty()
         finalizeAgentMessage(agentId, reply, analysisText)
         if (dialogComplete) remoteDialogComplete = true
+        persistState()
         return messages.value.last { it.id == agentId }
     }
 
@@ -186,12 +214,12 @@ class RemoteAgentRepository @Inject constructor(
         }
     }
 
-    override suspend fun resetChat() {
+    private suspend fun startNewConversationInternal(persist: Boolean) {
+        sessionId = null
         localState.reset()
         messageId = 0L
-        lastRemoteSuccess = false
         remoteDialogComplete = false
-        mockFallback.resetChat()
+        mockFallback.resetForFallback()
 
         if (preferRemote) {
             try {
@@ -203,6 +231,7 @@ class RemoteAgentRepository @Inject constructor(
                 messages.value = listOf(
                     ChatMessage(++messageId, response.message, isFromAgent = true)
                 )
+                if (persist) persistState()
                 return
             } catch (e: Exception) {
                 if (e is kotlinx.coroutines.CancellationException) throw e
@@ -214,6 +243,39 @@ class RemoteAgentRepository @Inject constructor(
         val greeting = localState.startConversation()
         messages.value = listOf(
             ChatMessage(++messageId, greeting, isFromAgent = true)
+        )
+        if (persist) persistState()
+    }
+
+    private fun restoreFromState(state: ChatSessionState) {
+        messageId = state.nextMessageId
+        sessionId = state.sessionId
+        remoteDialogComplete = state.remoteDialogComplete
+        messages.value = state.messages.map { msg ->
+            if (msg.isStreaming) {
+                msg.copy(isStreaming = false, isAnalysisExpanded = false)
+            } else {
+                msg
+            }
+        }
+        localState.restore(state.chatStep, state.preferenceBuffer, state.builder)
+        if (sessionId != null) {
+            lastRemoteSuccess = true
+            lastConnectionError = null
+        }
+    }
+
+    private suspend fun persistState() {
+        chatSessionStore.save(
+            ChatSessionState(
+                sessionId = sessionId,
+                messages = messages.value,
+                nextMessageId = messageId,
+                chatStep = localState.currentStep().name,
+                preferenceBuffer = localState.exportPreferenceBuffer().toList(),
+                builder = TripRequestBuilderSnapshot.from(localState.getBuilder()),
+                remoteDialogComplete = remoteDialogComplete
+            )
         )
     }
 

@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.room.Room
 import com.tourism.assistant.BuildConfig
 import com.tourism.assistant.data.local.AppDatabase
+import com.tourism.assistant.data.local.MIGRATION_1_2
+import com.tourism.assistant.data.local.ChatSessionDao
 import com.tourism.assistant.data.local.GsonProvider
 import com.tourism.assistant.data.local.SavedPlanDao
 import com.tourism.assistant.data.local.TripPlanLocalRepository
@@ -40,11 +42,15 @@ object AppModule {
             context,
             AppDatabase::class.java,
             "tourism_assistant.db"
-        ).build()
+        ).addMigrations(MIGRATION_1_2)
+            .build()
     }
 
     @Provides
     fun provideSavedPlanDao(database: AppDatabase): SavedPlanDao = database.savedPlanDao()
+
+    @Provides
+    fun provideChatSessionDao(database: AppDatabase): ChatSessionDao = database.chatSessionDao()
 
     @Provides
     @Singleton

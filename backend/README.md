@@ -47,7 +47,7 @@ USE_MOCK_LLM=false
 |------|------|
 | POST /api/v1/chat | Agent 多轮对话（RAG+LLM） |
 | POST /api/v1/chat/reset | 重置会话 |
-| POST /api/v1/plan/generate | 生成结构化行程 |
+| POST /api/v1/plan/generate | RAG 摘要 + LLM 生成结构化行程 |
 | POST /api/v1/rag/search | RAG 检索 |
 | POST /api/v1/corpus/crawl | 爬取目的地公开资料并入库 |
 

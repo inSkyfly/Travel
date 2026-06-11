@@ -1,177 +1,200 @@
-"""结合 RAG 资料生成结构化行程（供 Android 展示）"""
+"""RAG 检索 → 摘要 → LLM 生成结构化行程（供 Android 展示）"""
 
 from __future__ import annotations
 
-import json
+import copy
 from datetime import date, timedelta
-from pathlib import Path
 from typing import Any
 
-from app.config import CORPUS_DIR
 from app.llm.client import llm_client
 from app.rag.store import rag_store
 
 
-def _load_json_assets(city: str, kind: str) -> list[dict]:
-    key = "chengdu" if "成都" in city else city
-    path = Path(__file__).resolve().parents[2] / "data" / "structured" / f"{kind}_{key}.json"
-    if not path.exists():
-        path = Path(__file__).resolve().parents[2] / "data" / "structured" / f"{kind}_chengdu.json"
-    if not path.exists():
-        return []
-    return json.loads(path.read_text(encoding="utf-8"))
-
-
-def _enrich_from_rag(items: list[dict], rag_hits: list[dict], name_key: str = "name") -> list[dict]:
-    if not rag_hits:
-        return items
-    corpus = "\n".join(h["text"][:300] for h in rag_hits)
-    for item in items:
-        name = item.get(name_key, "")
-        related = [h["text"][:180] for h in rag_hits if name and name[:2] in h["text"]]
-        if related and not item.get("reason"):
-            item["reason"] = related[0]
-    return items
-
-
-def generate_plan(request: dict[str, Any]) -> dict[str, Any]:
-    destination = request.get("destination", "成都")
-    origin = request.get("origin", "北京")
-    date_range = request.get("dateRange", {})
-    start = date.fromisoformat(date_range.get("start", str(date.today())))
-    end = date.fromisoformat(date_range.get("end", str(start + timedelta(days=3))))
-    day_count = max((end - start).days + 1, 1)
-    travelers = int(request.get("travelers", 2))
-
-    rag_query = f"{destination} 景点 美食 住宿 交通 游记 推荐 避坑"
+def _collect_rag_context(destination: str) -> tuple[str, int]:
+    rag_query = f"{destination} 景点 美食 住宿 交通 游记 推荐 避坑 攻略"
     rag_hits: list[dict] = []
     seen: set[str] = set()
     for doc_type in ("guide", "qa", "web", "attraction"):
         for hit in rag_store.search(
-            rag_query, destination=destination, top_k=3, doc_type=doc_type
+            rag_query, destination=destination, top_k=4, doc_type=doc_type
         ):
             key = hit["text"][:80]
             if key in seen:
                 continue
             seen.add(key)
             rag_hits.append(hit)
-    if len(rag_hits) < 8:
-        for hit in rag_store.search(rag_query, destination=destination, top_k=8):
+    if len(rag_hits) < 12:
+        for hit in rag_store.search(rag_query, destination=destination, top_k=12):
             key = hit["text"][:80]
             if key in seen:
                 continue
             seen.add(key)
             rag_hits.append(hit)
-            if len(rag_hits) >= 8:
+            if len(rag_hits) >= 12:
                 break
-    rag_context = rag_store.build_context(rag_query, destination=destination, top_k=8)
 
-    hotels = _load_json_assets(destination, "hotels")
-    foods = _load_json_assets(destination, "foods")
-    attractions = _load_json_assets(destination, "attractions")
-    hotels = _enrich_from_rag(hotels, rag_hits)
-    foods = _enrich_from_rag(foods, rag_hits)
-    attractions = _enrich_from_rag(attractions, rag_hits)
+    # 无城市过滤的兜底检索（语料 metadata 未标城市时）
+    if not rag_hits:
+        for hit in rag_store.search(rag_query, destination="", top_k=12):
+            key = hit["text"][:80]
+            if key in seen:
+                continue
+            if destination[:2] not in hit["text"]:
+                continue
+            seen.add(key)
+            rag_hits.append(hit)
 
-    daily_plans = []
-    for i in range(day_count):
-        d = start + timedelta(days=i)
-        am = attractions[(i * 2) % len(attractions)] if attractions else {"name": "市区漫步", "reason": "轻松游览"}
-        pm = attractions[(i * 2 + 1) % len(attractions)] if attractions else am
-        daily_plans.append(
-            {
-                "dayIndex": i + 1,
-                "date": d.isoformat(),
-                "activities": [
-                    {
-                        "period": "上午",
-                        "title": am.get("name", "景点"),
-                        "description": am.get("reason", "推荐游览"),
-                        "transportToNext": "地铁/打车约30分钟",
-                    },
-                    {
-                        "period": "下午",
-                        "title": pm.get("name", "景点"),
-                        "description": pm.get("avoidTips") or pm.get("reason", "按节奏游览"),
-                        "transportToNext": "步行或公交",
-                    },
-                    {
-                        "period": "晚上",
-                        "title": "品尝本地美食",
-                        "description": foods[0]["name"] if foods else "本地特色餐厅",
-                        "transportToNext": None,
-                    },
-                ],
-            }
-        )
+    rag_context = rag_store.build_context(rag_query, destination=destination, top_k=12)
+    if not rag_context.strip() and rag_hits:
+        parts = []
+        for i, hit in enumerate(rag_hits[:12], 1):
+            meta = hit.get("metadata", {})
+            parts.append(
+                f"[{i}] 来源:{meta.get('source', 'unknown')}\n{hit['text'][:400]}"
+            )
+        rag_context = "\n\n".join(parts)
+    return rag_context, len(rag_hits)
 
-    tips_raw = llm_client.summarize_for_plan(request, rag_context)
-    try:
-        local_tips = json.loads(tips_raw)
-        if not isinstance(local_tips, list):
-            local_tips = [str(local_tips)]
-    except json.JSONDecodeError:
-        local_tips = [ln.strip() for ln in tips_raw.split("\n") if ln.strip()][:5]
 
-    transport_price = 550 * travelers
-    return {
-        "request": request,
-        "transport": {
-            "outbound": {
-                "type": "TRAIN",
-                "number": "G308",
-                "departure": origin,
-                "arrival": destination,
-                "departTime": "08:15",
-                "arriveTime": "14:20",
-                "duration": "约6小时",
-                "price": transport_price,
-                "transferInfo": None,
-                "bookingUrl": "https://www.12306.cn/index/",
-            },
-            "inbound": {
-                "type": "TRAIN",
-                "number": "G309",
-                "departure": destination,
-                "arrival": origin,
-                "departTime": "17:30",
-                "arriveTime": "23:45",
-                "duration": "约6小时",
-                "price": transport_price,
-                "transferInfo": None,
-                "bookingUrl": "https://www.12306.cn/index/",
-            },
-        },
-        "dailyPlans": daily_plans,
-        "accommodations": hotels,
-        "foods": foods,
-        "attractions": attractions,
-        "budgetBreakdown": {
+def _normalize_plan_body(
+    body: dict[str, Any],
+    request: dict[str, Any],
+    start: date,
+    day_count: int,
+) -> dict[str, Any]:
+    """补齐缺省字段，并强制使用客户端提交的 request。"""
+    plan = copy.deepcopy(body)
+    origin = request.get("origin", "")
+    destination = request.get("destination", "")
+
+    transport = plan.setdefault("transport", {})
+    outbound = transport.setdefault("outbound", {})
+    inbound = transport.setdefault("inbound", {})
+    outbound.setdefault("type", "TRAIN")
+    inbound.setdefault("type", "TRAIN")
+    outbound["departure"] = origin or outbound.get("departure", "")
+    outbound["arrival"] = destination or outbound.get("arrival", "")
+    inbound["departure"] = destination or inbound.get("departure", "")
+    inbound["arrival"] = origin or inbound.get("arrival", "")
+    outbound.setdefault("bookingUrl", "https://www.12306.cn/index/")
+    inbound.setdefault("bookingUrl", "https://www.12306.cn/index/")
+    outbound.setdefault("price", 500)
+    inbound.setdefault("price", 500)
+
+    daily = plan.get("dailyPlans") or []
+    if len(daily) < day_count:
+        daily = list(daily)
+        while len(daily) < day_count:
+            i = len(daily)
+            d = start + timedelta(days=i)
+            daily.append(
+                {
+                    "dayIndex": i + 1,
+                    "date": d.isoformat(),
+                    "activities": [
+                        {
+                            "period": "上午",
+                            "title": f"{destination}市区游览",
+                            "description": "自由安排",
+                            "transportToNext": None,
+                            "transportMode": "NONE",
+                        }
+                    ],
+                }
+            )
+    for i, day in enumerate(daily[:day_count]):
+        day["dayIndex"] = i + 1
+        day["date"] = (start + timedelta(days=i)).isoformat()
+        for act in day.get("activities") or []:
+            act.setdefault("transportMode", "NONE")
+            act.setdefault("nextDestinationLat", 0.0)
+            act.setdefault("nextDestinationLng", 0.0)
+
+    plan["dailyPlans"] = daily[:day_count]
+
+    for hotel in plan.get("accommodations") or []:
+        hotel.setdefault("rating", 4.5)
+        hotel.setdefault("recentGoodRate", 85)
+        hotel.setdefault("keywords", [])
+        hotel.setdefault("pricePerNight", 400)
+        hotel.setdefault("bookingUrl", "https://hotel.meituan.com/")
+        hotel.setdefault("platform", "美团")
+
+    for food in plan.get("foods") or []:
+        food.setdefault("avgPrice", 60)
+        food.setdefault("isLocalFavorite", True)
+        food.setdefault("isInfluencerHype", False)
+        food.setdefault("bookingUrl", "https://www.meituan.com/")
+        food.setdefault("platform", "大众点评")
+
+    for attr in plan.get("attractions") or []:
+        attr.setdefault("tags", [])
+        attr.setdefault("ticketPrice", 0)
+        attr.setdefault("bestTimeSlot", "全天")
+
+    weather = plan.get("weatherTips") or []
+    if len(weather) < day_count:
+        weather = list(weather)
+        while len(weather) < day_count:
+            i = len(weather)
+            weather.append(
+                {
+                    "date": (start + timedelta(days=i)).isoformat(),
+                    "condition": "多云",
+                    "tempHigh": 24,
+                    "tempLow": 16,
+                    "precipitation": "20%",
+                    "wind": "微风",
+                    "clothingAdvice": "根据气温增减衣物",
+                }
+            )
+    for i, w in enumerate(weather[:day_count]):
+        w["date"] = (start + timedelta(days=i)).isoformat()
+
+    plan["weatherTips"] = weather[:day_count]
+    plan.setdefault("localTips", [f"出行前请关注{destination}天气与景区开放信息"])
+    plan.setdefault("deepLinks", {})
+    plan["deepLinks"].setdefault("train_outbound", "https://www.12306.cn/index/")
+    plan["deepLinks"].setdefault(
+        "hotel",
+        (plan.get("accommodations") or [{}])[0].get("bookingUrl", "https://hotel.meituan.com/"),
+    )
+
+    if not plan.get("budgetBreakdown"):
+        plan["budgetBreakdown"] = {
             "total": 6000,
             "categories": [
-                {"name": "交通", "allocated": 1800, "spent": transport_price * 2},
-                {"name": "住宿", "allocated": 1800, "spent": sum(h.get("pricePerNight", 400) for h in hotels[:2])},
-                {"name": "餐饮", "allocated": 1320, "spent": sum(f.get("avgPrice", 60) for f in foods[:3]) * day_count},
-                {"name": "门票", "allocated": 720, "spent": 200 * day_count},
-                {"name": "其他", "allocated": 360, "spent": 300},
+                {"name": "交通", "allocated": 1800, "spent": 1200},
+                {"name": "住宿", "allocated": 1800, "spent": 1500},
+                {"name": "餐饮", "allocated": 1200, "spent": 1000},
+                {"name": "门票", "allocated": 800, "spent": 600},
+                {"name": "其他", "allocated": 400, "spent": 300},
             ],
-        },
-        "weatherTips": [
-            {
-                "date": (start + timedelta(days=i)).isoformat(),
-                "condition": "多云",
-                "tempHigh": 24,
-                "tempLow": 16,
-                "precipitation": "20%",
-                "wind": "东南风2-3级",
-                "clothingAdvice": "早晚温差大，建议薄外套",
-            }
-            for i in range(day_count)
-        ],
-        "localTips": local_tips,
-        "deepLinks": {
-            "train_outbound": "https://www.12306.cn/index/",
-            "hotel": hotels[0].get("bookingUrl", "https://hotel.meituan.com/") if hotels else "",
-        },
-        "ragSnippetCount": len(rag_hits),
-    }
+        }
+
+    plan["request"] = request
+    return plan
+
+
+def generate_plan(request: dict[str, Any]) -> dict[str, Any]:
+    destination = request.get("destination", "成都")
+    date_range = request.get("dateRange", {})
+    start = date.fromisoformat(date_range.get("start", str(date.today())))
+    end = date.fromisoformat(date_range.get("end", str(start + timedelta(days=3))))
+    day_count = max((end - start).days + 1, 1)
+
+    rag_context, rag_snippet_count = _collect_rag_context(destination)
+    rag_summary = llm_client.summarize_rag_for_plan(destination, rag_context)
+
+    plan_body = llm_client.generate_trip_plan(
+        request=request,
+        rag_summary=rag_summary,
+        day_count=day_count,
+        start=start,
+        end=end,
+    )
+
+    result = _normalize_plan_body(plan_body, request, start, day_count)
+    result["ragSnippetCount"] = rag_snippet_count
+    result["ragSummaryUsed"] = True
+    return result

@@ -91,9 +91,9 @@ class RagStore:
             )
 
         items: list[dict[str, Any]] = []
-        docs = result.get("documents", [[]])[0]
-        metas = result.get("metadatas", [[]])[0]
-        dists = result.get("distances", [[]])[0]
+        docs = (result.get("documents") or [[]])[0]
+        metas = (result.get("metadatas") or [[]])[0]
+        dists = (result.get("distances") or [[]])[0]
         for doc, meta, dist in zip(docs, metas, dists):
             if doc_type and meta.get("type") != doc_type:
                 continue
