@@ -1,0 +1,62 @@
+[
+  {
+    "name": "陈麻婆豆腐（总店）",
+    "area": "西玉龙街",
+    "taste": "辣",
+    "mealType": "正餐",
+    "avgPrice": 65,
+    "isLocalFavorite": true,
+    "isInfluencerHype": false,
+    "reason": "本地人推荐的老字号，麻婆豆腐下饭",
+    "avoidTips": "饭点需排队，可错峰",
+    "bookingUrl": "https://www.dianping.com/chengdu/mapo"
+  },
+  {
+    "name": "钟水饺（春熙路店）",
+    "area": "春熙路",
+    "taste": "微辣",
+    "mealType": "正餐",
+    "avgPrice": 35,
+    "isLocalFavorite": true,
+    "isInfluencerHype": false,
+    "reason": "小吃经典，甜水面也值得一试",
+    "avoidTips": null,
+    "bookingUrl": "https://www.meituan.com/chengdu/zhongshuijiao"
+  },
+  {
+    "name": "某网红火锅",
+    "area": "太古里",
+    "taste": "辣",
+    "mealType": "正餐",
+    "avgPrice": 120,
+    "isLocalFavorite": false,
+    "isInfluencerHype": true,
+    "reason": "打卡热度高，装修适合拍照",
+    "avoidTips": "真实口味评分可能低于预期，中差评提及等位久",
+    "bookingUrl": "https://www.dianping.com/chengdu/hotpot"
+  },
+  {
+    "name": "洞子口张老二凉粉",
+    "area": "文殊院",
+    "taste": "辣",
+    "mealType": "早餐",
+    "avgPrice": 15,
+    "isLocalFavorite": true,
+    "isInfluencerHype": false,
+    "reason": "本地人早餐首选，黄凉粉口碑好",
+    "avoidTips": "只营业到下午，别跑空",
+    "bookingUrl": "https://www.dianping.com/chengdu/liangfen"
+  },
+  {
+    "name": "玉林路烧烤",
+    "area": "玉林",
+    "taste": "辣",
+    "mealType": "夜宵",
+    "avgPrice": 80,
+    "isLocalFavorite": true,
+    "isInfluencerHype": false,
+    "reason": "本地论坛高赞：避开游客区，夜宵氛围好",
+    "avoidTips": "周末凌晨仍较热闹，注意保管随身物品",
+    "bookingUrl": "https://www.meituan.com/chengdu/yulin-bbq"
+  }
+]

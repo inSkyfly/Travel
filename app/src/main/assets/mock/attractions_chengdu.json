@@ -1,0 +1,57 @@
+[
+  {
+    "name": "都江堰",
+    "tags": ["自然风光", "历史文化", "亲子乐园"],
+    "reason": "用户原话：水利工程很震撼，适合带娃了解历史，空气也好",
+    "avoidTips": "周末排队较久，建议工作日上午前往",
+    "bestTimeSlot": "09:00-12:00",
+    "ticketPrice": 80,
+    "latitude": 30.9912,
+    "longitude": 103.6473,
+    "address": "成都市都江堰市公园路"
+  },
+  {
+    "name": "武侯祠",
+    "tags": ["历史文化"],
+    "reason": "用户原话：三国迷必去，红墙竹影拍照很出片",
+    "avoidTips": "节假日人流大，讲解需提前预约",
+    "bestTimeSlot": "14:00-17:00",
+    "ticketPrice": 50,
+    "latitude": 30.6469,
+    "longitude": 104.0483,
+    "address": "成都市武侯区武侯祠大街231号"
+  },
+  {
+    "name": "青城山",
+    "tags": ["自然风光", "休闲度假"],
+    "reason": "用户原话：想清静就来青城后山，比前山游客少",
+    "avoidTips": "下雨天部分步道湿滑，不建议带老人走险路",
+    "bestTimeSlot": "08:00-11:00",
+    "ticketPrice": 90,
+    "latitude": 30.9003,
+    "longitude": 103.5674,
+    "address": "成都市都江堰市青城山镇"
+  },
+  {
+    "name": "成都大熊猫繁育研究基地",
+    "tags": ["亲子乐园", "自然风光"],
+    "reason": "用户原话：早上去看熊猫进食最活跃，孩子超开心",
+    "avoidTips": "下午熊猫多在睡觉，建议7:30前到",
+    "bestTimeSlot": "07:30-10:00",
+    "ticketPrice": 55,
+    "latitude": 30.7326,
+    "longitude": 104.1445,
+    "address": "成都市成华区熊猫大道1375号"
+  },
+  {
+    "name": "人民公园鹤鸣茶社",
+    "tags": ["休闲度假", "历史文化"],
+    "reason": "用户原话：本地人喝茶摆龙门阵的地方，体验慢生活",
+    "avoidTips": "周末座位紧张，可自带小食",
+    "bestTimeSlot": "15:00-18:00",
+    "ticketPrice": 0,
+    "latitude": 30.6572,
+    "longitude": 104.0652,
+    "address": "成都市青羊区少城路12号人民公园内"
+  }
+]

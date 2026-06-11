@@ -1,0 +1,35 @@
+[
+  {
+    "name": "宽窄巷子精品客栈",
+    "rating": 4.7,
+    "recentGoodRate": 92,
+    "keywords": ["干净", "交通方便", "房东热情"],
+    "controversyWarning": null,
+    "pricePerNight": 380,
+    "distanceToAttraction": "步行5分钟至宽窄巷子",
+    "bookingUrl": "https://hotel.meituan.com/chengdu/kuanzhai",
+    "platform": "美团"
+  },
+  {
+    "name": "春熙路城市酒店",
+    "rating": 4.6,
+    "recentGoodRate": 88,
+    "keywords": ["干净", "交通方便", "购物方便"],
+    "controversyWarning": null,
+    "pricePerNight": 520,
+    "distanceToAttraction": "地铁2号线春熙路站200米",
+    "bookingUrl": "https://hotel.qunar.com/chengdu/chunxi",
+    "platform": "去哪儿"
+  },
+  {
+    "name": "锦里古街民宿",
+    "rating": 4.5,
+    "recentGoodRate": 86,
+    "keywords": ["有特色", "交通方便"],
+    "controversyWarning": "部分用户反馈隔音较差，建议避开临街房间",
+    "pricePerNight": 290,
+    "distanceToAttraction": "步行8分钟至锦里",
+    "bookingUrl": "https://hotel.ctrip.com/chengdu/jinli",
+    "platform": "携程"
+  }
+]

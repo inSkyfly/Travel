@@ -1,0 +1,25 @@
+*.iml
+.gradle
+/local.properties
+/.idea
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+*.apk
+*.ap_
+*.aab
+
+# Android Studio
+*.hprof
+
+# Kotlin
+*.kotlin_module
+
+# Secrets
+local.properties
+
+/backend/.venv
+/backend/.env
+
