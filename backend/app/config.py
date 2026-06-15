@@ -13,24 +13,12 @@ DATA_DIR = BASE_DIR / "data"
 CORPUS_DIR = DATA_DIR / "corpus"
 CHROMA_DIR = DATA_DIR / "chroma"
 
-LLM_API_KEY = os.getenv("LLM_API_KEY", "")
-LLM_BASE_URL = os.getenv("LLM_BASE_URL", "https://api.deepseek.com")
-LLM_MODEL = os.getenv("LLM_MODEL", "deepseek-chat")
-USE_MOCK_LLM = os.getenv("USE_MOCK_LLM", "true" if not LLM_API_KEY else "false").lower() == "true"
+LLM_API_KEY = os.getenv("LLM_API_KEY", "sk-48a534a3b7ff452fbda71f4c5200805d")
+LLM_BASE_URL = os.getenv("LLM_BASE_URL", "https://dashscope.aliyuncs.com/compatible-mode/v1")
+LLM_MODEL = os.getenv("LLM_MODEL", "qwen3.7-plus")
+USE_MOCK_LLM = os.getenv("USE_MOCK_LLM", "false" if not LLM_API_KEY else "false").lower() == "true"
 
-# 城市名 → 语料目录 / 检索 metadata 统一 key
-CITY_KEYS: dict[str, str] = {
-    "成都": "chengdu",
-    "chengdu": "chengdu",
-    "北京": "beijing",
-    "beijing": "beijing",
-    "上海": "shanghai",
-    "shanghai": "shanghai",
-    "杭州": "hangzhou",
-    "hangzhou": "hangzhou",
-    "西安": "xian",
-    "xian": "xian",
-}
+from app.config_city_keys import CITY_KEYS
 
 
 def resolve_city_key(destination: str) -> str:
@@ -43,7 +31,11 @@ def resolve_city_key(destination: str) -> str:
     return re.sub(r"[^\w]", "", key.lower()) or "general"
 
 
-# 公开资料爬取源（维基百科等开放内容，请遵守 robots.txt）
+# 国内可用的开放数据源（生成行程时按需自动拉取，无需手工维护 JSON）
+# - OpenStreetMap：景点 / 餐饮 POI + 坐标（ODbL 开放许可）
+# - Wikidata：结构化地点知识（CC0）
+# - 中文维基百科 / 维基导游：攻略文本（CC BY-SA）
+OPEN_DATA_SOURCES = ("osm", "wikidata", "wikipedia", "wikivoyage")
 CRAWL_SOURCES: dict[str, list[str]] = {
     "成都": [
         "https://zh.wikipedia.org/wiki/成都市",

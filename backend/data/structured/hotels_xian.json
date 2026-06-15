@@ -1,0 +1,44 @@
+[
+  {
+    "name": "钟楼商圈酒店",
+    "rating": 4.6,
+    "recentGoodRate": 89,
+    "keywords": [
+      "交通方便",
+      "购物方便"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 420,
+    "distanceToAttraction": "步行至钟楼鼓楼",
+    "bookingUrl": "https://hotel.meituan.com/xian/zhonglou",
+    "platform": "美团"
+  },
+  {
+    "name": "回民街特色客栈",
+    "rating": 4.5,
+    "recentGoodRate": 85,
+    "keywords": [
+      "有特色",
+      "美食方便"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 320,
+    "distanceToAttraction": "回民街步行2分钟",
+    "bookingUrl": "https://hotel.ctrip.com/xian/huiminjie",
+    "platform": "携程"
+  },
+  {
+    "name": "大雁塔景观酒店",
+    "rating": 4.7,
+    "recentGoodRate": 90,
+    "keywords": [
+      "景观好",
+      "干净"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 480,
+    "distanceToAttraction": "远眺大雁塔",
+    "bookingUrl": "https://hotel.qunar.com/xian/dayanta",
+    "platform": "去哪儿"
+  }
+]

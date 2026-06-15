@@ -1,0 +1,44 @@
+[
+  {
+    "name": "西湖湖滨酒店",
+    "rating": 4.7,
+    "recentGoodRate": 92,
+    "keywords": [
+      "景观好",
+      "交通方便"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 650,
+    "distanceToAttraction": "步行至西湖边",
+    "bookingUrl": "https://hotel.ctrip.com/hangzhou/xihu",
+    "platform": "携程"
+  },
+  {
+    "name": "河坊街客栈",
+    "rating": 4.5,
+    "recentGoodRate": 86,
+    "keywords": [
+      "有特色",
+      "古街"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 380,
+    "distanceToAttraction": "河坊街核心位置",
+    "bookingUrl": "https://hotel.meituan.com/hangzhou/hefangjie",
+    "platform": "美团"
+  },
+  {
+    "name": "灵隐景区度假酒店",
+    "rating": 4.6,
+    "recentGoodRate": 88,
+    "keywords": [
+      "安静",
+      "自然"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 520,
+    "distanceToAttraction": "距灵隐寺约10分钟车程",
+    "bookingUrl": "https://hotel.qunar.com/hangzhou/lingyin",
+    "platform": "去哪儿"
+  }
+]

@@ -41,10 +41,41 @@ class MockRagRepository @Inject constructor(
     }
 
     private fun cityKey(destination: String): String {
-        return when {
-            destination.contains("成都") -> "chengdu"
-            else -> "chengdu"
+        val d = destination.trim()
+        val rules = listOf(
+            "成都" to "chengdu",
+            "北京" to "beijing",
+            "上海" to "shanghai",
+            "杭州" to "hangzhou",
+            "西安" to "xian",
+            "广州" to "guangzhou",
+            "深圳" to "shenzhen",
+            "重庆" to "chongqing",
+            "南京" to "nanjing",
+            "苏州" to "suzhou",
+            "武汉" to "wuhan",
+            "长沙" to "changsha",
+            "厦门" to "xiamen",
+            "青岛" to "qingdao",
+            "大连" to "dalian",
+            "哈尔滨" to "harbin",
+            "昆明" to "kunming",
+            "桂林" to "guilin",
+            "三亚" to "sanya",
+            "丽江" to "lijiang",
+            "大理" to "dali",
+            "拉萨" to "lhasa",
+            "新疆" to "xinjiang",
+            "伊犁" to "xinjiang",
+            "乌鲁木齐" to "xinjiang",
+            "喀什" to "xinjiang",
+        )
+        for ((name, key) in rules) {
+            if (d.contains(name)) return key
         }
+        return d.replace(Regex("[^a-zA-Z0-9\u4e00-\u9fa5]"), "")
+            .takeIf { it.isNotBlank() }
+            ?: "general"
     }
 
     private fun defaultHotels(): List<HotelRec> = listOf(

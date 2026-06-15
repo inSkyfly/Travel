@@ -1,0 +1,44 @@
+[
+  {
+    "name": "中山路步行街酒店",
+    "rating": 4.6,
+    "recentGoodRate": 88,
+    "keywords": [
+      "交通方便",
+      "美食多"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 480,
+    "distanceToAttraction": "中山路步行街",
+    "bookingUrl": "https://hotel.ctrip.com/xiamen/zhongshanlu",
+    "platform": "携程"
+  },
+  {
+    "name": "鼓浪屿民宿",
+    "rating": 4.5,
+    "recentGoodRate": 85,
+    "keywords": [
+      "海岛风情",
+      "有特色"
+    ],
+    "controversyWarning": "岛上行李需步行搬运",
+    "pricePerNight": 420,
+    "distanceToAttraction": "鼓浪屿岛上",
+    "bookingUrl": "https://hotel.meituan.com/xiamen/gulangyu",
+    "platform": "美团"
+  },
+  {
+    "name": "环岛路海景酒店",
+    "rating": 4.7,
+    "recentGoodRate": 91,
+    "keywords": [
+      "海景",
+      "浪漫"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 620,
+    "distanceToAttraction": "环岛路海滨",
+    "bookingUrl": "https://hotel.qunar.com/xiamen/huandao",
+    "platform": "去哪儿"
+  }
+]

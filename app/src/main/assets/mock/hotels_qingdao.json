@@ -1,0 +1,44 @@
+[
+  {
+    "name": "栈桥海景酒店",
+    "rating": 4.6,
+    "recentGoodRate": 89,
+    "keywords": [
+      "海景",
+      "交通方便"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 520,
+    "distanceToAttraction": "栈桥步行10分钟",
+    "bookingUrl": "https://hotel.ctrip.com/qingdao/zhanqiao",
+    "platform": "携程"
+  },
+  {
+    "name": "八大关别墅客栈",
+    "rating": 4.7,
+    "recentGoodRate": 90,
+    "keywords": [
+      "有特色",
+      "安静"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 480,
+    "distanceToAttraction": "八大关风景区",
+    "bookingUrl": "https://hotel.meituan.com/qingdao/badaguan",
+    "platform": "美团"
+  },
+  {
+    "name": "五四广场商务酒店",
+    "rating": 4.5,
+    "recentGoodRate": 87,
+    "keywords": [
+      "现代",
+      "地铁方便"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 450,
+    "distanceToAttraction": "五四广场地铁口",
+    "bookingUrl": "https://hotel.qunar.com/qingdao/wusi",
+    "platform": "去哪儿"
+  }
+]

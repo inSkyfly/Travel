@@ -1,0 +1,44 @@
+[
+  {
+    "name": "大理古城客栈",
+    "rating": 4.6,
+    "recentGoodRate": 88,
+    "keywords": [
+      "白族风情",
+      "古城内"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 380,
+    "distanceToAttraction": "古城南门步行5分钟",
+    "bookingUrl": "https://hotel.ctrip.com/dali/gucheng",
+    "platform": "携程"
+  },
+  {
+    "name": "洱海海景民宿",
+    "rating": 4.7,
+    "recentGoodRate": 91,
+    "keywords": [
+      "海景",
+      "浪漫"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 520,
+    "distanceToAttraction": "洱海边骑行道旁",
+    "bookingUrl": "https://hotel.meituan.com/dali/erhai",
+    "platform": "美团"
+  },
+  {
+    "name": "双廊艺术客栈",
+    "rating": 4.5,
+    "recentGoodRate": 87,
+    "keywords": [
+      "文艺",
+      "湖景"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 450,
+    "distanceToAttraction": "双廊古镇",
+    "bookingUrl": "https://hotel.qunar.com/dali/shuanglang",
+    "platform": "去哪儿"
+  }
+]

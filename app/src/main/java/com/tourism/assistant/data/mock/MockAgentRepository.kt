@@ -23,6 +23,7 @@ import com.tourism.assistant.domain.repository.RagRepository
 import com.tourism.assistant.domain.repository.WeatherRepository
 import com.tourism.assistant.util.BudgetCalculator
 import com.tourism.assistant.util.ChatStreamRenderer
+import com.tourism.assistant.util.LocalTransportEstimator
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -214,7 +215,12 @@ class MockAgentRepository @Inject constructor(
     }
 
     override suspend fun buildRequestFromChat(): TripRequest? {
-        return chatStateMachine.getBuilder().build()
+        val builder = chatStateMachine.getBuilder()
+        return if (chatStateMachine.isDialogComplete()) {
+            builder.buildForPlan()
+        } else {
+            builder.build()
+        }
     }
 
     private fun filterAttractions(
@@ -284,6 +290,15 @@ class MockAgentRepository @Inject constructor(
             val morning = list.getOrNull(dayIndex * 2) ?: list.first()
             val afternoon = list.getOrNull(dayIndex * 2 + 1) ?: list.getOrNull(1) ?: list.first()
             val eveningFood = foods.getOrNull(dayIndex % foods.size.coerceAtLeast(1))
+            val amToPm = LocalTransportEstimator.estimate(
+                morning.latitude, morning.longitude,
+                afternoon.latitude, afternoon.longitude
+            )
+            val pmToEvening = LocalTransportEstimator.estimate(
+                afternoon.latitude, afternoon.longitude,
+                eveningFood?.latitude ?: 0.0,
+                eveningFood?.longitude ?: 0.0
+            )
             DailyPlan(
                 dayIndex = dayIndex + 1,
                 date = date,
@@ -292,21 +307,21 @@ class MockAgentRepository @Inject constructor(
                         period = "上午",
                         title = morning.name,
                         description = morning.reason,
-                        transportToNext = "地铁/打车约30分钟",
+                        transportToNext = amToPm.label,
                         nextDestinationName = afternoon.name,
                         nextDestinationLat = afternoon.latitude,
                         nextDestinationLng = afternoon.longitude,
-                        transportMode = LocalTransportMode.METRO
+                        transportMode = amToPm.mode
                     ),
                     TimeSlotActivity(
                         period = "下午",
                         title = afternoon.name,
-                        description = afternoon.avoidTips ?: "按节奏游览",
-                        transportToNext = "打车约20分钟",
+                        description = afternoon.avoidTips ?: morning.reason,
+                        transportToNext = pmToEvening.label,
                         nextDestinationName = eveningFood?.name ?: "晚餐餐厅",
                         nextDestinationLat = eveningFood?.latitude ?: 0.0,
                         nextDestinationLng = eveningFood?.longitude ?: 0.0,
-                        transportMode = LocalTransportMode.TAXI
+                        transportMode = pmToEvening.mode
                     ),
                     TimeSlotActivity(
                         period = "晚上",

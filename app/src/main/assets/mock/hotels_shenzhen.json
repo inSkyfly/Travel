@@ -1,0 +1,44 @@
+[
+  {
+    "name": "福田CBD酒店",
+    "rating": 4.7,
+    "recentGoodRate": 90,
+    "keywords": [
+      "交通方便",
+      "商务"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 620,
+    "distanceToAttraction": "福田地铁站旁",
+    "bookingUrl": "https://hotel.ctrip.com/shenzhen/futian",
+    "platform": "携程"
+  },
+  {
+    "name": "东门步行街酒店",
+    "rating": 4.5,
+    "recentGoodRate": 87,
+    "keywords": [
+      "购物方便",
+      "美食多"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 420,
+    "distanceToAttraction": "东门步行街入口",
+    "bookingUrl": "https://hotel.meituan.com/shenzhen/dongmen",
+    "platform": "美团"
+  },
+  {
+    "name": "深圳湾海景酒店",
+    "rating": 4.8,
+    "recentGoodRate": 92,
+    "keywords": [
+      "景观好",
+      "现代"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 750,
+    "distanceToAttraction": "深圳湾公园步行10分钟",
+    "bookingUrl": "https://hotel.qunar.com/shenzhen/shenzhenwan",
+    "platform": "去哪儿"
+  }
+]

@@ -1,0 +1,44 @@
+[
+  {
+    "name": "珠江新城商务酒店",
+    "rating": 4.7,
+    "recentGoodRate": 91,
+    "keywords": [
+      "交通方便",
+      "现代"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 580,
+    "distanceToAttraction": "地铁珠江新城站",
+    "bookingUrl": "https://hotel.ctrip.com/guangzhou/zhujiang",
+    "platform": "携程"
+  },
+  {
+    "name": "上下九步行街客栈",
+    "rating": 4.5,
+    "recentGoodRate": 86,
+    "keywords": [
+      "老广风情",
+      "美食多"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 350,
+    "distanceToAttraction": "上下九核心地段",
+    "bookingUrl": "https://hotel.meituan.com/guangzhou/shangxiajiu",
+    "platform": "美团"
+  },
+  {
+    "name": "白云山度假酒店",
+    "rating": 4.6,
+    "recentGoodRate": 88,
+    "keywords": [
+      "安静",
+      "自然"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 450,
+    "distanceToAttraction": "近白云山南门",
+    "bookingUrl": "https://hotel.qunar.com/guangzhou/baiyunshan",
+    "platform": "去哪儿"
+  }
+]

@@ -17,15 +17,13 @@ from app.config import (
     WIKIVOYAGE_SOURCES,
     resolve_city_key,
 )
+from app.crawler.discover import discover_crawl_urls
+from app.crawler.http_config import HEADERS, REQUEST_DELAY_SEC
+from app.crawler.osm_open_data import crawl_osm_to_corpus, merge_open_attractions
+from app.crawler.wikidata_open import crawl_wikidata_to_corpus, fetch_wikidata_places
 from app.rag.store import rag_store
 
-HEADERS = {
-    "User-Agent": "TourismAssistantBot/1.0 (Educational RAG; +https://github.com/local)",
-    "Accept-Language": "zh-CN,zh;q=0.9",
-}
-
 STACKEXCHANGE_API = "https://api.stackexchange.com/2.2"
-REQUEST_DELAY_SEC = 1.0
 
 
 def _safe_filename(name: str, max_len: int = 50) -> str:
@@ -36,7 +34,7 @@ def _title_from_url(url: str) -> str:
     return url.rstrip("/").split("/")[-1]
 
 
-def fetch_page_text(url: str, timeout: float = 20.0) -> str:
+def fetch_page_text(url: str, timeout: float = 12.0) -> str:
     with httpx.Client(headers=HEADERS, follow_redirects=True, timeout=timeout) as client:
         resp = client.get(url)
         resp.raise_for_status()
@@ -82,7 +80,10 @@ def _sources_for(destination: str, mapping: dict[str, list]) -> list:
 def crawl_wikipedia(destination: str, out_dir: Path) -> tuple[list[str], list[str]]:
     saved: list[str] = []
     errors: list[str] = []
-    for url in _sources_for(destination, CRAWL_SOURCES):
+    urls = _sources_for(destination, CRAWL_SOURCES)
+    if not urls:
+        urls = discover_crawl_urls(destination)["wikipedia"]
+    for url in urls:
         try:
             text = fetch_page_text(url)
             title = _title_from_url(url)
@@ -106,7 +107,10 @@ def crawl_wikipedia(destination: str, out_dir: Path) -> tuple[list[str], list[st
 def crawl_wikivoyage(destination: str, out_dir: Path) -> tuple[list[str], list[str]]:
     saved: list[str] = []
     errors: list[str] = []
-    for url in _sources_for(destination, WIKIVOYAGE_SOURCES):
+    urls = _sources_for(destination, WIKIVOYAGE_SOURCES)
+    if not urls:
+        urls = discover_crawl_urls(destination)["wikivoyage"]
+    for url in urls:
         try:
             text = fetch_page_text(url)
             title = _title_from_url(url)
@@ -146,10 +150,11 @@ def _fetch_stackexchange_questions(
         "sort": "votes",
         "site": "travel",
         "q": query,
-        "tagged": tagged,
         "pagesize": pagesize,
         "filter": "withbody",
     }
+    if tagged:
+        params["tagged"] = tagged
     resp = client.get(f"{STACKEXCHANGE_API}/search/advanced", params=params)
     resp.raise_for_status()
     return resp.json().get("items", [])
@@ -187,7 +192,7 @@ def crawl_stackexchange(destination: str, out_dir: Path) -> tuple[list[str], lis
     city_key = resolve_city_key(destination)
     config = STACKEXCHANGE_QUERIES.get(destination) or STACKEXCHANGE_QUERIES.get(city_key)
     if not config:
-        return [], []
+        config = {"q": destination, "tagged": ""}
 
     saved: list[str] = []
     errors: list[str] = []
@@ -237,24 +242,57 @@ def crawl_stackexchange(destination: str, out_dir: Path) -> tuple[list[str], lis
     return saved, errors
 
 
+def _safe_crawl(step: str, fn, *args) -> tuple[list[str], list[str]]:
+    try:
+        return fn(*args)
+    except Exception as exc:
+        return [], [f"{step}: {exc}"]
+
+
 def crawl_destination(destination: str) -> dict:
     city_key = resolve_city_key(destination)
     out_dir = CORPUS_DIR / city_key
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    wiki_saved, wiki_errors = crawl_wikipedia(destination, out_dir)
-    guide_saved, guide_errors = crawl_wikivoyage(destination, out_dir)
-    qa_saved, qa_errors = crawl_stackexchange(destination, out_dir)
+    osm_saved, osm_errors = _safe_crawl(
+        "osm", crawl_osm_to_corpus, destination, city_key, out_dir
+    )
+    wikidata_saved, wikidata_errors = _safe_crawl(
+        "wikidata", crawl_wikidata_to_corpus, destination, out_dir
+    )
+    try:
+        wikidata_places = fetch_wikidata_places(destination)
+        if wikidata_places:
+            merge_open_attractions(city_key, wikidata_places)
+    except Exception as exc:
+        wikidata_errors = list(wikidata_errors) + [f"wikidata_merge: {exc}"]
 
-    saved = wiki_saved + guide_saved + qa_saved
-    errors = wiki_errors + guide_errors + qa_errors
+    wiki_saved, wiki_errors = _safe_crawl(
+        "wikipedia", crawl_wikipedia, destination, out_dir
+    )
+    guide_saved, guide_errors = _safe_crawl(
+        "wikivoyage", crawl_wikivoyage, destination, out_dir
+    )
+    qa_saved, qa_errors = _safe_crawl(
+        "stackexchange", crawl_stackexchange, destination, out_dir
+    )
 
-    chunks = rag_store.ingest_corpus_dir(out_dir)
+    saved = osm_saved + wikidata_saved + wiki_saved + guide_saved + qa_saved
+    errors = osm_errors + wikidata_errors + wiki_errors + guide_errors + qa_errors
+
+    try:
+        chunks = rag_store.ingest_corpus_dir(out_dir)
+    except Exception as exc:
+        chunks = 0
+        errors.append(f"ingest: {exc}")
+
     return {
         "destination": destination,
         "city_key": city_key,
         "saved_files": saved,
         "counts": {
+            "osm": len(osm_saved),
+            "wikidata": len(wikidata_saved),
             "wikipedia": len(wiki_saved),
             "wikivoyage": len(guide_saved),
             "stackexchange": len(qa_saved),

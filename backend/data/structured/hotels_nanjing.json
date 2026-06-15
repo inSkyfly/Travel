@@ -1,0 +1,44 @@
+[
+  {
+    "name": "夫子庙秦淮酒店",
+    "rating": 4.6,
+    "recentGoodRate": 89,
+    "keywords": [
+      "交通方便",
+      "古建风情"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 480,
+    "distanceToAttraction": "夫子庙景区步行5分钟",
+    "bookingUrl": "https://hotel.ctrip.com/nanjing/fuzimiao",
+    "platform": "携程"
+  },
+  {
+    "name": "新街口商务酒店",
+    "rating": 4.7,
+    "recentGoodRate": 90,
+    "keywords": [
+      "购物方便",
+      "地铁方便"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 520,
+    "distanceToAttraction": "新街口地铁站",
+    "bookingUrl": "https://hotel.meituan.com/nanjing/xinjiekou",
+    "platform": "美团"
+  },
+  {
+    "name": "玄武湖景观酒店",
+    "rating": 4.5,
+    "recentGoodRate": 87,
+    "keywords": [
+      "景观好",
+      "安静"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 420,
+    "distanceToAttraction": "玄武湖公园东门",
+    "bookingUrl": "https://hotel.qunar.com/nanjing/xuanwuhu",
+    "platform": "去哪儿"
+  }
+]

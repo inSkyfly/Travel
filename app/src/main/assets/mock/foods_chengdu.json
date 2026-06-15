@@ -13,7 +13,8 @@
     "address": "成都市青羊区西玉龙街197号",
     "latitude": 30.6674,
     "longitude": 104.0625,
-    "platform": "大众点评"
+    "platform": "大众点评",
+    "shopId": "5079867"
   },
   {
     "name": "钟水饺（春熙路店）",
@@ -25,7 +26,7 @@
     "isInfluencerHype": false,
     "reason": "小吃经典，甜水面也值得一试",
     "avoidTips": null,
-    "bookingUrl": "https://www.meituan.com/meishi/",
+    "bookingUrl": "https://i.meituan.com/s/%E9%92%9F%E6%B0%B4%E9%A5%BA%EF%BC%88%E6%98%A5%E7%86%99%E8%B7%AF%E5%BA%97%EF%BC%89%20%E6%98%A5%E7%86%99%E8%B7%AF",
     "address": "成都市锦江区春熙路商圈",
     "latitude": 30.6558,
     "longitude": 104.0812,
@@ -73,7 +74,7 @@
     "isInfluencerHype": false,
     "reason": "本地论坛高赞：避开游客区，夜宵氛围好",
     "avoidTips": "周末凌晨仍较热闹，注意保管随身物品",
-    "bookingUrl": "https://www.meituan.com/meishi/",
+    "bookingUrl": "https://i.meituan.com/s/%E7%8E%89%E6%9E%97%E8%B7%AF%E7%83%A7%E7%83%A4%20%E7%8E%89%E6%9E%97",
     "address": "成都市武侯区玉林路",
     "latitude": 30.6389,
     "longitude": 104.0688,

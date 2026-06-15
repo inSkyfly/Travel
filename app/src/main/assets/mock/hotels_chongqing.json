@@ -1,0 +1,44 @@
+[
+  {
+    "name": "解放碑江景酒店",
+    "rating": 4.7,
+    "recentGoodRate": 91,
+    "keywords": [
+      "景观好",
+      "交通方便"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 520,
+    "distanceToAttraction": "解放碑步行5分钟",
+    "bookingUrl": "https://hotel.ctrip.com/chongqing/jiefangbei",
+    "platform": "携程"
+  },
+  {
+    "name": "洪崖洞民俗客栈",
+    "rating": 4.5,
+    "recentGoodRate": 86,
+    "keywords": [
+      "有特色",
+      "夜景"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 380,
+    "distanceToAttraction": "洪崖洞步行3分钟",
+    "bookingUrl": "https://hotel.meituan.com/chongqing/hongyadong",
+    "platform": "美团"
+  },
+  {
+    "name": "南山一棵树观景酒店",
+    "rating": 4.6,
+    "recentGoodRate": 88,
+    "keywords": [
+      "景观好",
+      "安静"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 450,
+    "distanceToAttraction": "南山观景台附近",
+    "bookingUrl": "https://hotel.qunar.com/chongqing/nanshan",
+    "platform": "去哪儿"
+  }
+]

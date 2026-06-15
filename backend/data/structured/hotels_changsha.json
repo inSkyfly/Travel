@@ -1,0 +1,44 @@
+[
+  {
+    "name": "五一广场酒店",
+    "rating": 4.6,
+    "recentGoodRate": 89,
+    "keywords": [
+      "交通方便",
+      "美食多"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 450,
+    "distanceToAttraction": "五一广场地铁口",
+    "bookingUrl": "https://hotel.meituan.com/changsha/wuyi",
+    "platform": "美团"
+  },
+  {
+    "name": "橘子洲江景酒店",
+    "rating": 4.7,
+    "recentGoodRate": 90,
+    "keywords": [
+      "江景",
+      "景观好"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 520,
+    "distanceToAttraction": "湘江中路，望橘子洲",
+    "bookingUrl": "https://hotel.ctrip.com/changsha/juzizhou",
+    "platform": "携程"
+  },
+  {
+    "name": "岳麓山民宿",
+    "rating": 4.5,
+    "recentGoodRate": 86,
+    "keywords": [
+      "安静",
+      "自然"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 360,
+    "distanceToAttraction": "岳麓山南门附近",
+    "bookingUrl": "https://hotel.qunar.com/changsha/yuelu",
+    "platform": "去哪儿"
+  }
+]

@@ -7,15 +7,19 @@ import com.tourism.assistant.data.local.TripRequestBuilderSnapshot
 import com.tourism.assistant.data.mock.MockAgentRepository
 import com.tourism.assistant.data.remote.dto.ChatResetRequestDto
 import com.tourism.assistant.domain.model.ChatMessage
+import com.tourism.assistant.domain.model.BudgetLevel
 import com.tourism.assistant.domain.model.TripPlan
 import com.tourism.assistant.domain.model.TripRequest
 import com.tourism.assistant.domain.repository.AgentRepository
 import com.tourism.assistant.util.ChatStreamRenderer
+import com.tourism.assistant.util.FlexibleDateParser
+import com.tourism.assistant.util.TripRouteParser
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
+import java.time.LocalDate
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -41,14 +45,21 @@ class RemoteAgentRepository @Inject constructor(
     fun getLastConnectionError(): String? = lastConnectionError
     fun hasPersistedSession(): Boolean = sessionId != null || messages.value.isNotEmpty()
 
+    private var lastPlanError: String? = null
+
+    fun getLastPlanError(): String? = lastPlanError
+
     override suspend fun generatePlan(request: TripRequest): TripPlan {
-        if (preferRemote) {
-            try {
-                return api.generatePlan(request)
-            } catch (_: Exception) {
-            }
+        if (!preferRemote) {
+            return mockFallback.generatePlan(request)
         }
-        return mockFallback.generatePlan(request)
+        try {
+            lastPlanError = null
+            return api.generatePlan(request)
+        } catch (e: Exception) {
+            lastPlanError = "云端不可用，已改用本地资料生成行程"
+            return mockFallback.generatePlan(request)
+        }
     }
 
     override fun getChatMessages(): Flow<List<ChatMessage>> = messages.asStateFlow()
@@ -74,6 +85,14 @@ class RemoteAgentRepository @Inject constructor(
         if (!memoryInitialized) ensureChatInitialized()
 
         val (reply, dialogComplete) = localState.processInput(message)
+        TripRouteParser.parse(message)?.let { (origin, destination) ->
+            localState.getBuilder().origin = origin
+            localState.getBuilder().destination = destination
+        }
+        FlexibleDateParser.parseRange(message)?.let { (start, end) ->
+            localState.getBuilder().startDate = start
+            localState.getBuilder().endDate = end
+        }
 
         val userMsg = ChatMessage(++messageId, message, isFromAgent = false)
         val agentId = ++messageId
@@ -121,6 +140,7 @@ class RemoteAgentRepository @Inject constructor(
                 "done" -> {
                     if (event.session_id.isNotBlank()) sessionId = event.session_id
                     if (event.is_complete || dialogComplete) remoteDialogComplete = true
+                    event.partial_request?.let { applyPartialRequest(it) }
                     finalContent = event.content.ifBlank { finalContent }
                     if (finalContent.isNotBlank() && contentBuffer != finalContent) {
                         contentBuffer = finalContent
@@ -290,7 +310,52 @@ class RemoteAgentRepository @Inject constructor(
     }
 
     override suspend fun buildRequestFromChat(): TripRequest? {
-        return localState.getBuilder().build()
+        val builder = localState.getBuilder()
+        return if (remoteDialogComplete || localState.isDialogComplete()) {
+            builder.buildForPlan()
+        } else {
+            builder.build()
+        }
+    }
+
+    private fun applyPartialRequest(partial: Map<String, Any>) {
+        val builder = localState.getBuilder()
+        (partial["origin"] as? String)?.takeIf { it.isNotBlank() }?.let { builder.origin = it }
+        (partial["destination"] as? String)?.takeIf { it.isNotBlank() }?.let {
+            builder.destination = it
+        }
+        when (val travelers = partial["travelers"]) {
+            is Int -> if (travelers > 0) builder.travelers = travelers
+            is Double -> if (travelers > 0) builder.travelers = travelers.toInt()
+            is Number -> if (travelers.toInt() > 0) builder.travelers = travelers.toInt()
+        }
+        (partial["specialNeeds"] as? String)?.let { builder.specialNeeds = it }
+
+        val dateRange = partial["dateRange"] as? Map<*, *>
+        if (dateRange != null) {
+            (dateRange["start"] as? String)?.let { text ->
+                runCatching { LocalDate.parse(text) }.getOrNull()?.let { builder.startDate = it }
+            }
+            (dateRange["end"] as? String)?.let { text ->
+                runCatching { LocalDate.parse(text) }.getOrNull()?.let { builder.endDate = it }
+            }
+        }
+
+        val budget = partial["budget"] as? Map<*, *>
+        if (budget != null) {
+            when (budget["type"] as? String) {
+                "amount" -> (budget["total"] as? Number)?.toInt()?.let { total ->
+                    builder.budgetAmount = total
+                    builder.budgetLevel = null
+                }
+                "level" -> (budget["level"] as? String)?.let { levelName ->
+                    runCatching { BudgetLevel.valueOf(levelName) }.getOrNull()?.let { level ->
+                        builder.budgetLevel = level
+                        builder.budgetAmount = null
+                    }
+                }
+            }
+        }
     }
 
     private fun updateAgentMessage(id: Long, transform: (ChatMessage) -> ChatMessage) {

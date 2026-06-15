@@ -1,0 +1,44 @@
+[
+  {
+    "name": "星海广场酒店",
+    "rating": 4.6,
+    "recentGoodRate": 88,
+    "keywords": [
+      "海景",
+      "交通方便"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 480,
+    "distanceToAttraction": "星海广场步行5分钟",
+    "bookingUrl": "https://hotel.ctrip.com/dalian/xinghai",
+    "platform": "携程"
+  },
+  {
+    "name": "俄罗斯风情街客栈",
+    "rating": 4.5,
+    "recentGoodRate": 85,
+    "keywords": [
+      "异域风情",
+      "有特色"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 380,
+    "distanceToAttraction": "风情街核心",
+    "bookingUrl": "https://hotel.meituan.com/dalian/russia",
+    "platform": "美团"
+  },
+  {
+    "name": "老虎滩海洋酒店",
+    "rating": 4.6,
+    "recentGoodRate": 87,
+    "keywords": [
+      "亲子",
+      "海景"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 520,
+    "distanceToAttraction": "老虎滩海洋公园旁",
+    "bookingUrl": "https://hotel.qunar.com/dalian/tiger",
+    "platform": "去哪儿"
+  }
+]

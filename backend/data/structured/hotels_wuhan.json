@@ -1,0 +1,44 @@
+[
+  {
+    "name": "黄鹤楼景观酒店",
+    "rating": 4.6,
+    "recentGoodRate": 89,
+    "keywords": [
+      "景观好",
+      "交通方便"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 480,
+    "distanceToAttraction": "远眺黄鹤楼",
+    "bookingUrl": "https://hotel.ctrip.com/wuhan/huanghelou",
+    "platform": "携程"
+  },
+  {
+    "name": "江汉路步行街酒店",
+    "rating": 4.5,
+    "recentGoodRate": 87,
+    "keywords": [
+      "购物方便",
+      "江景"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 420,
+    "distanceToAttraction": "江汉路地铁站",
+    "bookingUrl": "https://hotel.meituan.com/wuhan/jianghanlu",
+    "platform": "美团"
+  },
+  {
+    "name": "东湖绿道客栈",
+    "rating": 4.5,
+    "recentGoodRate": 86,
+    "keywords": [
+      "自然",
+      "骑行方便"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 380,
+    "distanceToAttraction": "东湖绿道入口",
+    "bookingUrl": "https://hotel.qunar.com/wuhan/donghu",
+    "platform": "去哪儿"
+  }
+]

@@ -130,9 +130,10 @@ fun PlanScreen(
                     onFoodTasteSelected = viewModel::filterFoodByTaste,
                     onBookTransport = { viewModel.deepLinkHelper.openTransportBooking(it) },
                     onBookHotel = { hotel ->
-                        viewModel.deepLinkHelper.openHotelBooking(hotel.bookingUrl, hotel.name)
+                        viewModel.deepLinkHelper.openHotelBooking(hotel)
                     },
                     onFoodClick = { selectedFood = it },
+                    onBookFood = { viewModel.openFoodShop(it) },
                     onMetroNavigate = { requestMapNavigation(it, LocalTransportMode.METRO) },
                     onTaxiNavigate = { requestMapNavigation(it, LocalTransportMode.TAXI) },
                     modifier = Modifier.padding(padding)
@@ -171,7 +172,7 @@ private fun FoodDetailDialog(
         },
         confirmButton = {
             Button(onClick = onOpenApp) {
-                Text("打开${food.platform}")
+                Text("去${food.platform}查看")
             }
         },
         dismissButton = {
@@ -191,6 +192,7 @@ private fun PlanContent(
     onBookTransport: (TransportSegment) -> Unit,
     onBookHotel: (HotelRec) -> Unit,
     onFoodClick: (FoodRec) -> Unit,
+    onBookFood: (FoodRec) -> Unit,
     onMetroNavigate: (TimeSlotActivity) -> Unit,
     onTaxiNavigate: (TimeSlotActivity) -> Unit,
     modifier: Modifier = Modifier
@@ -265,7 +267,11 @@ private fun PlanContent(
             }
         }
         foods.forEach { food ->
-            FoodCard(food, onClick = { onFoodClick(food) })
+            FoodCard(
+                food = food,
+                onClick = { onFoodClick(food) },
+                onBook = { onBookFood(food) }
+            )
         }
 
         SectionTitle("预算分配")
@@ -368,7 +374,11 @@ private fun HotelCard(hotel: HotelRec, onBook: (HotelRec) -> Unit) {
 }
 
 @Composable
-private fun FoodCard(food: FoodRec, onClick: () -> Unit) {
+private fun FoodCard(
+    food: FoodRec,
+    onClick: () -> Unit,
+    onBook: () -> Unit
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -394,10 +404,13 @@ private fun FoodCard(food: FoodRec, onClick: () -> Unit) {
             }
             food.avoidTips?.let { Text("避坑：$it", color = MaterialTheme.colorScheme.error) }
             Text(
-                "点击查看详情 · 跳转${food.platform}",
-                color = MaterialTheme.colorScheme.primary,
-                style = MaterialTheme.typography.labelMedium
+                "点击查看详情",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+            Button(onClick = onBook) {
+                Text("去${food.platform}查看")
+            }
         }
     }
 }

@@ -111,7 +111,9 @@ data class FoodRec(
     val address: String = "",
     val latitude: Double = 0.0,
     val longitude: Double = 0.0,
-    val platform: String = "大众点评"
+    val platform: String = "大众点评",
+    /** 美团/点评店铺 POI ID，用于直达店铺详情页 */
+    val shopId: String? = null
 )
 
 data class BudgetCategory(

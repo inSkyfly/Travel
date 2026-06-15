@@ -1,0 +1,44 @@
+[
+  {
+    "name": "布达拉宫观景酒店",
+    "rating": 4.6,
+    "recentGoodRate": 89,
+    "keywords": [
+      "景观好",
+      "藏式风格"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 520,
+    "distanceToAttraction": "远眺布达拉宫",
+    "bookingUrl": "https://hotel.ctrip.com/lhasa/potala",
+    "platform": "携程"
+  },
+  {
+    "name": "八廓街客栈",
+    "rating": 4.5,
+    "recentGoodRate": 86,
+    "keywords": [
+      "藏式风情",
+      "朝圣方便"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 380,
+    "distanceToAttraction": "八廓街步行3分钟",
+    "bookingUrl": "https://hotel.meituan.com/lhasa/barkhor",
+    "platform": "美团"
+  },
+  {
+    "name": "大昭寺周边酒店",
+    "rating": 4.5,
+    "recentGoodRate": 87,
+    "keywords": [
+      "交通便利",
+      "文化"
+    ],
+    "controversyWarning": "高原注意休息",
+    "pricePerNight": 420,
+    "distanceToAttraction": "大昭寺广场附近",
+    "bookingUrl": "https://hotel.qunar.com/lhasa/jokhang",
+    "platform": "去哪儿"
+  }
+]

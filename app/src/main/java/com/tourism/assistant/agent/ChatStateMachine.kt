@@ -1,10 +1,12 @@
 package com.tourism.assistant.agent
 
+import android.util.Log
 import com.tourism.assistant.data.local.TripRequestBuilderSnapshot
 import com.tourism.assistant.domain.TripRequestBuilder
 import com.tourism.assistant.domain.model.BudgetLevel
 import com.tourism.assistant.domain.model.Preference
 import com.tourism.assistant.util.FlexibleDateParser
+import com.tourism.assistant.util.TripRouteParser
 
 enum class ChatStep {
     GREETING,
@@ -21,6 +23,7 @@ enum class ChatStep {
 class ChatStateMachine(
     private val builder: TripRequestBuilder = TripRequestBuilder()
 ) {
+    private val TAG = ChatStateMachine::class.simpleName
     private var step = ChatStep.GREETING
     private var preferenceBuffer = mutableSetOf<Preference>()
 
@@ -40,16 +43,30 @@ class ChatStateMachine(
         if (text.isEmpty()) {
             return "请再补充一些信息哦～" to false
         }
-
+        Log.d(TAG, "step: $step")
         return when (step) {
             ChatStep.GREETING -> startConversation() to false
             ChatStep.DESTINATION -> {
-                builder.destination = text
-                step = ChatStep.ORIGIN
-                "好的，${builder.destination}是个不错的选择！请问您从哪个城市出发？" to false
+                val route = TripRouteParser.parse(text)
+                if (route != null) {
+                    builder.origin = route.first
+                    builder.destination = route.second
+                    step = ChatStep.DATES
+                    "好的，从${builder.origin}到${builder.destination}！请告诉我出行日期范围，例如：0610-0614、6月10到14号" to false
+                } else {
+                    builder.destination = text
+                    step = ChatStep.ORIGIN
+                    "好的，${builder.destination}是个不错的选择！请问您从哪个城市出发？" to false
+                }
             }
             ChatStep.ORIGIN -> {
-                builder.origin = text
+                val route = TripRouteParser.parse(text)
+                if (route != null) {
+                    builder.origin = route.first
+                    builder.destination = route.second
+                } else {
+                    builder.origin = text
+                }
                 step = ChatStep.DATES
                 "请告诉我出行日期范围，例如：0610-0614、6月10到14号、2026年6月10到6月14日 都可以" to false
             }

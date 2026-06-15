@@ -1,0 +1,44 @@
+[
+  {
+    "name": "丽江古城客栈",
+    "rating": 4.6,
+    "recentGoodRate": 88,
+    "keywords": [
+      "纳西风情",
+      "古城核心"
+    ],
+    "controversyWarning": "古城内行李需步行",
+    "pricePerNight": 420,
+    "distanceToAttraction": "古城内步行游览方便",
+    "bookingUrl": "https://hotel.ctrip.com/lijiang/gucheng",
+    "platform": "携程"
+  },
+  {
+    "name": "束河古镇民宿",
+    "rating": 4.5,
+    "recentGoodRate": 86,
+    "keywords": [
+      "安静",
+      "文艺"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 350,
+    "distanceToAttraction": "束河古镇中心",
+    "bookingUrl": "https://hotel.meituan.com/lijiang/shuhe",
+    "platform": "美团"
+  },
+  {
+    "name": "玉龙雪山观景酒店",
+    "rating": 4.7,
+    "recentGoodRate": 90,
+    "keywords": [
+      "景观好",
+      "度假"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 580,
+    "distanceToAttraction": "远眺玉龙雪山",
+    "bookingUrl": "https://hotel.qunar.com/lijiang/yulong",
+    "platform": "去哪儿"
+  }
+]

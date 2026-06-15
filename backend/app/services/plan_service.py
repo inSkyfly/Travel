@@ -8,13 +8,15 @@ from typing import Any
 
 from app.llm.client import llm_client
 from app.rag.store import rag_store
+from app.services.corpus_service import ensure_destination_corpus
+from app.services.plan_enricher import enrich_plan_body
 
 
-def _collect_rag_context(destination: str) -> tuple[str, int]:
+def _collect_rag_context(destination: str) -> tuple[str, list[dict], int]:
     rag_query = f"{destination} 景点 美食 住宿 交通 游记 推荐 避坑 攻略"
     rag_hits: list[dict] = []
     seen: set[str] = set()
-    for doc_type in ("guide", "qa", "web", "attraction"):
+    for doc_type in ("osm", "wikidata", "guide", "qa", "web", "attraction"):
         for hit in rag_store.search(
             rag_query, destination=destination, top_k=4, doc_type=doc_type
         ):
@@ -35,11 +37,24 @@ def _collect_rag_context(destination: str) -> tuple[str, int]:
 
     # 无城市过滤的兜底检索（语料 metadata 未标城市时）
     if not rag_hits:
-        for hit in rag_store.search(rag_query, destination="", top_k=12):
+        for hit in rag_store.search(rag_query, destination="", top_k=24):
             key = hit["text"][:80]
             if key in seen:
                 continue
-            if destination[:2] not in hit["text"]:
+            text = hit["text"]
+            if destination[:2] in text or destination in text:
+                seen.add(key)
+                rag_hits.append(hit)
+            if len(rag_hits) >= 12:
+                break
+
+    # 目的地关键词仍无结果时，用无过滤语义检索（避免误用其他城市语料）
+    if not rag_hits:
+        for hit in rag_store.search(
+            f"{destination} 景点 美食 攻略", destination="", top_k=12
+        ):
+            key = hit["text"][:80]
+            if key in seen:
                 continue
             seen.add(key)
             rag_hits.append(hit)
@@ -53,7 +68,7 @@ def _collect_rag_context(destination: str) -> tuple[str, int]:
                 f"[{i}] 来源:{meta.get('source', 'unknown')}\n{hit['text'][:400]}"
             )
         rag_context = "\n\n".join(parts)
-    return rag_context, len(rag_hits)
+    return rag_context, rag_hits, len(rag_hits)
 
 
 def _normalize_plan_body(
@@ -178,23 +193,50 @@ def _normalize_plan_body(
 
 def generate_plan(request: dict[str, Any]) -> dict[str, Any]:
     destination = request.get("destination", "成都")
-    date_range = request.get("dateRange", {})
-    start = date.fromisoformat(date_range.get("start", str(date.today())))
-    end = date.fromisoformat(date_range.get("end", str(start + timedelta(days=3))))
+    date_range = request.get("dateRange") or {}
+    start_raw = date_range.get("start")
+    end_raw = date_range.get("end")
+    start = date.fromisoformat(start_raw) if start_raw else date.today()
+    end = date.fromisoformat(end_raw) if end_raw else start + timedelta(days=3)
     day_count = max((end - start).days + 1, 1)
 
-    rag_context, rag_snippet_count = _collect_rag_context(destination)
-    rag_summary = llm_client.summarize_rag_for_plan(destination, rag_context)
+    web_fetch = ensure_destination_corpus(destination)
 
-    plan_body = llm_client.generate_trip_plan(
-        request=request,
-        rag_summary=rag_summary,
-        day_count=day_count,
-        start=start,
-        end=end,
-    )
+    try:
+        rag_context, rag_hits, rag_snippet_count = _collect_rag_context(destination)
+        rag_summary = llm_client.summarize_rag_for_plan(destination, rag_context)
 
-    result = _normalize_plan_body(plan_body, request, start, day_count)
-    result["ragSnippetCount"] = rag_snippet_count
-    result["ragSummaryUsed"] = True
-    return result
+        plan_body = llm_client.generate_trip_plan(
+            request=request,
+            rag_summary=rag_summary,
+            day_count=day_count,
+            start=start,
+            end=end,
+        )
+
+        result = _normalize_plan_body(plan_body, request, start, day_count)
+        result = enrich_plan_body(
+            result, destination, rag_hits, start=start, day_count=day_count
+        )
+        result["ragSnippetCount"] = rag_snippet_count
+        result["ragSummaryUsed"] = True
+        if web_fetch:
+            result["webFetch"] = web_fetch
+        return result
+    except Exception as llm_err:
+        from app.services.plan_local import (
+            generate_plan_from_local_data,
+            has_local_materials,
+        )
+
+        if not has_local_materials(destination):
+            raise ValueError(
+                f"云端行程生成失败且本地无「{destination}」资料：{llm_err}"
+            ) from llm_err
+
+        result = generate_plan_from_local_data(request, start, day_count)
+        result["llmFallback"] = True
+        result["llmError"] = str(llm_err)
+        if web_fetch:
+            result["webFetch"] = web_fetch
+        return result

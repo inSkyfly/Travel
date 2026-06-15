@@ -127,7 +127,7 @@ class ChatViewModel @Inject constructor(
             _uiState.value = _uiState.value.copy(isGenerating = true, error = null)
             try {
                 val request = agentRepository.buildRequestFromChat()
-                    ?: sharedTripSession.currentBuilder().build()
+                    ?: sharedTripSession.currentBuilder().buildForPlan()
                 if (request == null) {
                     _uiState.value = _uiState.value.copy(
                         isGenerating = false,
@@ -137,11 +137,16 @@ class ChatViewModel @Inject constructor(
                 }
                 val plan = agentRepository.generatePlan(request)
                 val id = tripPlanRepository.savePlan(plan)
+                val offlineHint = (agentRepository as? RemoteAgentRepository)?.getLastPlanError()
                 onSuccess(plan.copy(id = id))
+                if (offlineHint != null) {
+                    _uiState.value = _uiState.value.copy(error = offlineHint)
+                }
             } catch (e: Exception) {
+                val remoteHint = (agentRepository as? RemoteAgentRepository)?.getLastPlanError()
                 _uiState.value = _uiState.value.copy(
                     isGenerating = false,
-                    error = e.message ?: "生成失败"
+                    error = remoteHint ?: e.message ?: "生成失败"
                 )
             } finally {
                 _uiState.value = _uiState.value.copy(isGenerating = false)

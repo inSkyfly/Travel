@@ -1,0 +1,44 @@
+[
+  {
+    "name": "乌鲁木齐国际大巴扎酒店",
+    "rating": 4.6,
+    "recentGoodRate": 88,
+    "keywords": [
+      "民族风情",
+      "交通方便"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 420,
+    "distanceToAttraction": "大巴扎步行5分钟",
+    "bookingUrl": "https://hotel.ctrip.com/urumqi/bazaar",
+    "platform": "携程"
+  },
+  {
+    "name": "天山天池度假酒店",
+    "rating": 4.5,
+    "recentGoodRate": 86,
+    "keywords": [
+      "自然",
+      "度假"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 480,
+    "distanceToAttraction": "天池景区车程1小时",
+    "bookingUrl": "https://hotel.meituan.com/urumqi/tianshan",
+    "platform": "美团"
+  },
+  {
+    "name": "伊犁河谷客栈",
+    "rating": 4.6,
+    "recentGoodRate": 87,
+    "keywords": [
+      "草原风情",
+      "安静"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 380,
+    "distanceToAttraction": "伊宁市市中心",
+    "bookingUrl": "https://hotel.qunar.com/yili/hegu",
+    "platform": "去哪儿"
+  }
+]

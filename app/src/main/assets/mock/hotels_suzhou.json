@@ -1,0 +1,44 @@
+[
+  {
+    "name": "平江路客栈",
+    "rating": 4.6,
+    "recentGoodRate": 88,
+    "keywords": [
+      "水乡风情",
+      "安静"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 420,
+    "distanceToAttraction": "平江路历史街区",
+    "bookingUrl": "https://hotel.ctrip.com/suzhou/pingjianglu",
+    "platform": "携程"
+  },
+  {
+    "name": "观前街商务酒店",
+    "rating": 4.5,
+    "recentGoodRate": 87,
+    "keywords": [
+      "交通方便",
+      "购物方便"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 450,
+    "distanceToAttraction": "观前街步行3分钟",
+    "bookingUrl": "https://hotel.meituan.com/suzhou/guanqianjie",
+    "platform": "美团"
+  },
+  {
+    "name": "金鸡湖度假酒店",
+    "rating": 4.7,
+    "recentGoodRate": 91,
+    "keywords": [
+      "现代",
+      "景观好"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 580,
+    "distanceToAttraction": "金鸡湖畔",
+    "bookingUrl": "https://hotel.qunar.com/suzhou/jinji",
+    "platform": "去哪儿"
+  }
+]

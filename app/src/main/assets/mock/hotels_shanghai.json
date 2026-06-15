@@ -1,0 +1,44 @@
+[
+  {
+    "name": "外滩江景酒店",
+    "rating": 4.8,
+    "recentGoodRate": 93,
+    "keywords": [
+      "景观好",
+      "交通方便"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 780,
+    "distanceToAttraction": "步行至外滩观景台",
+    "bookingUrl": "https://hotel.ctrip.com/shanghai/bund",
+    "platform": "携程"
+  },
+  {
+    "name": "南京路步行街酒店",
+    "rating": 4.6,
+    "recentGoodRate": 89,
+    "keywords": [
+      "购物方便",
+      "地铁方便"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 620,
+    "distanceToAttraction": "地铁1号线人民广场站",
+    "bookingUrl": "https://hotel.meituan.com/shanghai/nanjinglu",
+    "platform": "美团"
+  },
+  {
+    "name": "田子坊艺术民宿",
+    "rating": 4.5,
+    "recentGoodRate": 87,
+    "keywords": [
+      "有特色",
+      "文艺"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 450,
+    "distanceToAttraction": "步行至田子坊",
+    "bookingUrl": "https://hotel.qunar.com/shanghai/tianzifang",
+    "platform": "去哪儿"
+  }
+]

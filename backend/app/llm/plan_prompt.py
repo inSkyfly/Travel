@@ -4,12 +4,14 @@ from __future__ import annotations
 
 PLAN_SYSTEM_PROMPT = """你是专业旅游行程规划师。根据「用户需求」和「参考资料摘要」生成完整行程。
 要求：
-1. 行程必须匹配用户指定的目的地城市，景点、美食、住宿均应在目的地当地
-2. 优先依据参考资料；资料不足时可结合常识，但不要编造具体评分、精确票价，价格用合理估算并标注「约」
-3. 只输出一个合法 JSON 对象，不要 markdown 代码块，不要额外解释
-4. 往返交通的 departure/arrival 必须与用户出发地、目的地一致
-5. dailyPlans 天数必须与用户日期范围一致，每天含上午、下午、晚上 3 个时段
-6. transport.type 只能是 TRAIN 或 FLIGHT；transportMode 只能是 METRO/TAXI/WALK/BUS/NONE"""
+1. 每日游玩、美食、住宿必须全部在「目的地」城市/地区（如用户成都→新疆，景点美食只能是新疆的）；出发地仅用于往返交通 departure/arrival
+2. 景点、美食、住宿名称必须来自参考资料摘要中的真实地点，不要编造，更不要使用出发地的景点
+3. 每日 dailyPlans 固定 3 段：上午(景点)、下午(景点)、晚上(美食/夜游)；title 用具体景点/餐厅名
+4. description 写推荐理由或避坑提示，优先引用资料原文风格，不要写「说明」等占位词
+5. nextDestinationName 填本时段结束后要去的下一个具体地点名；transportToNext 可留空字符串，坐标可填 0（服务端会根据资料库计算）
+6. 只输出一个合法 JSON 对象，不要 markdown，不要额外解释
+7. 往返交通 departure/arrival 必须与用户出发地、目的地一致
+8. transport.type 只能是 TRAIN 或 FLIGHT；transportMode 只能是 METRO/TAXI/WALK/BUS/NONE"""
 
 PLAN_USER_TEMPLATE = """## 用户需求
 {request_json}
@@ -50,12 +52,12 @@ PLAN_JSON_SCHEMA = """
         {
           "period": "上午",
           "title": "景点或活动名",
-          "description": "说明",
-          "transportToNext": "地铁约20分钟",
-          "nextDestinationName": "下一景点名",
+          "description": "来自资料的推荐理由或避坑提示",
+          "transportToNext": "",
+          "nextDestinationName": "下一具体景点或餐厅名",
           "nextDestinationLat": 0.0,
           "nextDestinationLng": 0.0,
-          "transportMode": "METRO"
+          "transportMode": "NONE"
         },
         { "period": "下午", ... },
         { "period": "晚上", "title": "晚餐或夜游", "description": "...", "transportToNext": null, "transportMode": "NONE" }

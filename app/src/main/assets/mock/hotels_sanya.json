@@ -1,0 +1,44 @@
+[
+  {
+    "name": "亚龙湾度假酒店",
+    "rating": 4.8,
+    "recentGoodRate": 93,
+    "keywords": [
+      "海景",
+      "度假"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 880,
+    "distanceToAttraction": "亚龙湾沙滩步行5分钟",
+    "bookingUrl": "https://hotel.ctrip.com/sanya/yalong",
+    "platform": "携程"
+  },
+  {
+    "name": "大东海海景酒店",
+    "rating": 4.6,
+    "recentGoodRate": 89,
+    "keywords": [
+      "海景",
+      "性价比"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 520,
+    "distanceToAttraction": "大东海沙滩旁",
+    "bookingUrl": "https://hotel.meituan.com/sanya/dadonghai",
+    "platform": "美团"
+  },
+  {
+    "name": "三亚湾椰梦长廊酒店",
+    "rating": 4.5,
+    "recentGoodRate": 87,
+    "keywords": [
+      "海景",
+      "日落"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 450,
+    "distanceToAttraction": "椰梦长廊步行3分钟",
+    "bookingUrl": "https://hotel.qunar.com/sanya/sanyawan",
+    "platform": "去哪儿"
+  }
+]

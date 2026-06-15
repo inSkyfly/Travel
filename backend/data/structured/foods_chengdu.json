@@ -9,7 +9,12 @@
     "isInfluencerHype": false,
     "reason": "本地人推荐的老字号，麻婆豆腐下饭",
     "avoidTips": "饭点需排队，可错峰",
-    "bookingUrl": "https://www.dianping.com/chengdu/mapo"
+    "bookingUrl": "https://www.dianping.com/shop/5079867",
+    "address": "成都市青羊区西玉龙街197号",
+    "latitude": 30.6674,
+    "longitude": 104.0625,
+    "platform": "大众点评",
+    "shopId": "5079867"
   },
   {
     "name": "钟水饺（春熙路店）",
@@ -21,7 +26,11 @@
     "isInfluencerHype": false,
     "reason": "小吃经典，甜水面也值得一试",
     "avoidTips": null,
-    "bookingUrl": "https://www.meituan.com/chengdu/zhongshuijiao"
+    "bookingUrl": "https://i.meituan.com/s/%E9%92%9F%E6%B0%B4%E9%A5%BA%EF%BC%88%E6%98%A5%E7%86%99%E8%B7%AF%E5%BA%97%EF%BC%89%20%E6%98%A5%E7%86%99%E8%B7%AF",
+    "address": "成都市锦江区春熙路商圈",
+    "latitude": 30.6558,
+    "longitude": 104.0812,
+    "platform": "美团"
   },
   {
     "name": "某网红火锅",
@@ -33,7 +42,11 @@
     "isInfluencerHype": true,
     "reason": "打卡热度高，装修适合拍照",
     "avoidTips": "真实口味评分可能低于预期，中差评提及等位久",
-    "bookingUrl": "https://www.dianping.com/chengdu/hotpot"
+    "bookingUrl": "https://www.dianping.com/chengdu/hotpot",
+    "address": "成都市锦江区中纱帽街8号成都远洋太古里",
+    "latitude": 30.6538,
+    "longitude": 104.0895,
+    "platform": "大众点评"
   },
   {
     "name": "洞子口张老二凉粉",
@@ -45,7 +58,11 @@
     "isInfluencerHype": false,
     "reason": "本地人早餐首选，黄凉粉口碑好",
     "avoidTips": "只营业到下午，别跑空",
-    "bookingUrl": "https://www.dianping.com/chengdu/liangfen"
+    "bookingUrl": "https://www.dianping.com/chengdu/liangfen",
+    "address": "成都市青羊区文殊院街39号",
+    "latitude": 30.6742,
+    "longitude": 104.0736,
+    "platform": "大众点评"
   },
   {
     "name": "玉林路烧烤",
@@ -57,6 +74,10 @@
     "isInfluencerHype": false,
     "reason": "本地论坛高赞：避开游客区，夜宵氛围好",
     "avoidTips": "周末凌晨仍较热闹，注意保管随身物品",
-    "bookingUrl": "https://www.meituan.com/chengdu/yulin-bbq"
+    "bookingUrl": "https://i.meituan.com/s/%E7%8E%89%E6%9E%97%E8%B7%AF%E7%83%A7%E7%83%A4%20%E7%8E%89%E6%9E%97",
+    "address": "成都市武侯区玉林路",
+    "latitude": 30.6389,
+    "longitude": 104.0688,
+    "platform": "美团"
   }
 ]

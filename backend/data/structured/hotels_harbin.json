@@ -1,0 +1,44 @@
+[
+  {
+    "name": "中央大街酒店",
+    "rating": 4.6,
+    "recentGoodRate": 89,
+    "keywords": [
+      "俄式风情",
+      "交通方便"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 420,
+    "distanceToAttraction": "中央大街步行3分钟",
+    "bookingUrl": "https://hotel.ctrip.com/harbin/zhongyang",
+    "platform": "携程"
+  },
+  {
+    "name": "冰雪大世界周边酒店",
+    "rating": 4.5,
+    "recentGoodRate": 86,
+    "keywords": [
+      "冬季特色",
+      "暖气足"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 380,
+    "distanceToAttraction": "冰雪大世界车程15分钟",
+    "bookingUrl": "https://hotel.meituan.com/harbin/ice",
+    "platform": "美团"
+  },
+  {
+    "name": "松花江江景酒店",
+    "rating": 4.6,
+    "recentGoodRate": 88,
+    "keywords": [
+      "江景",
+      "景观好"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 450,
+    "distanceToAttraction": "松花江畔",
+    "bookingUrl": "https://hotel.qunar.com/harbin/songhua",
+    "platform": "去哪儿"
+  }
+]

@@ -1,0 +1,44 @@
+[
+  {
+    "name": "两江四湖酒店",
+    "rating": 4.6,
+    "recentGoodRate": 88,
+    "keywords": [
+      "景观好",
+      "市中心"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 450,
+    "distanceToAttraction": "两江四湖游船码头",
+    "bookingUrl": "https://hotel.ctrip.com/guilin/liangjiang",
+    "platform": "携程"
+  },
+  {
+    "name": "阳朔西街客栈",
+    "rating": 4.5,
+    "recentGoodRate": 86,
+    "keywords": [
+      "文艺",
+      "夜生活"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 380,
+    "distanceToAttraction": "阳朔西街核心",
+    "bookingUrl": "https://hotel.meituan.com/guilin/yangshuo",
+    "platform": "美团"
+  },
+  {
+    "name": "象鼻山景区酒店",
+    "rating": 4.5,
+    "recentGoodRate": 87,
+    "keywords": [
+      "地标",
+      "交通方便"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 420,
+    "distanceToAttraction": "象鼻山步行8分钟",
+    "bookingUrl": "https://hotel.qunar.com/guilin/xiangbi",
+    "platform": "去哪儿"
+  }
+]

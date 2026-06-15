@@ -18,7 +18,8 @@ data class ChatStreamEvent(
     val delta: String = "",
     val content: String = "",
     val session_id: String = "",
-    val is_complete: Boolean = false
+    val is_complete: Boolean = false,
+    val partial_request: Map<String, Any>? = null
 )
 
 @Singleton
@@ -57,12 +58,19 @@ class ChatStreamClient @Inject constructor(
 
     private fun parseEvent(payload: String): ChatStreamEvent {
         val obj = gson.fromJson(payload, JsonObject::class.java)
+        val partial = obj.get("partial_request")
+            ?.takeIf { it.isJsonObject }
+            ?.asJsonObject
+            ?.let { jsonObj ->
+                gson.fromJson(jsonObj, Map::class.java) as Map<String, Any>
+            }
         return ChatStreamEvent(
             type = obj.get("type")?.asString ?: "",
             delta = obj.get("delta")?.asString ?: "",
             content = obj.get("content")?.asString ?: "",
             session_id = obj.get("session_id")?.asString ?: "",
-            is_complete = obj.get("is_complete")?.asBoolean ?: false
+            is_complete = obj.get("is_complete")?.asBoolean ?: false,
+            partial_request = partial
         )
     }
 }

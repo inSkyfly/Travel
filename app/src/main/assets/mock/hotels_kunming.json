@@ -1,0 +1,44 @@
+[
+  {
+    "name": "翠湖宾馆",
+    "rating": 4.6,
+    "recentGoodRate": 88,
+    "keywords": [
+      "园林",
+      "交通便利"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 480,
+    "distanceToAttraction": "翠湖公园旁",
+    "bookingUrl": "https://hotel.ctrip.com/kunming/cuihu",
+    "platform": "携程"
+  },
+  {
+    "name": "金马碧鸡坊酒店",
+    "rating": 4.5,
+    "recentGoodRate": 87,
+    "keywords": [
+      "市中心",
+      "美食多"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 380,
+    "distanceToAttraction": "金马碧鸡坊步行5分钟",
+    "bookingUrl": "https://hotel.meituan.com/kunming/jinma",
+    "platform": "美团"
+  },
+  {
+    "name": "滇池度假酒店",
+    "rating": 4.7,
+    "recentGoodRate": 90,
+    "keywords": [
+      "湖景",
+      "安静"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 520,
+    "distanceToAttraction": "滇池海埂公园旁",
+    "bookingUrl": "https://hotel.qunar.com/kunming/dianchi",
+    "platform": "去哪儿"
+  }
+]

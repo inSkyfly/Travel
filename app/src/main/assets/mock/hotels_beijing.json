@@ -1,0 +1,45 @@
+[
+  {
+    "name": "王府井商务酒店",
+    "rating": 4.7,
+    "recentGoodRate": 91,
+    "keywords": [
+      "干净",
+      "交通方便",
+      "购物方便"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 580,
+    "distanceToAttraction": "步行至王府井步行街",
+    "bookingUrl": "https://hotel.qunar.com/beijing/wangfujing",
+    "platform": "去哪儿"
+  },
+  {
+    "name": "南锣鼓巷精品客栈",
+    "rating": 4.6,
+    "recentGoodRate": 88,
+    "keywords": [
+      "有特色",
+      "交通方便"
+    ],
+    "controversyWarning": null,
+    "pricePerNight": 420,
+    "distanceToAttraction": "步行5分钟至南锣鼓巷",
+    "bookingUrl": "https://hotel.meituan.com/beijing/nanluoguxiang",
+    "platform": "美团"
+  },
+  {
+    "name": "什刹海景观酒店",
+    "rating": 4.5,
+    "recentGoodRate": 86,
+    "keywords": [
+      "景观好",
+      "安静"
+    ],
+    "controversyWarning": "部分房间隔音一般",
+    "pricePerNight": 480,
+    "distanceToAttraction": "临什刹海，夜景佳",
+    "bookingUrl": "https://hotel.ctrip.com/beijing/shichahai",
+    "platform": "携程"
+  }
+]

@@ -41,15 +41,34 @@ class TripRequestBuilder {
 
     fun build(): TripRequest? {
         if (!isComplete()) return null
-        val start = startDate ?: return null
-        val end = endDate ?: return null
+        return buildResolved(
+            start = startDate!!,
+            end = endDate!!,
+            budget = budgetAmount?.let { BudgetInput.Amount(it) }
+                ?: BudgetInput.Level(budgetLevel ?: BudgetLevel.COMFORT)
+        )
+    }
+
+    /** 云端对话已标记完成时，缺失日期/预算用合理默认值补齐 */
+    fun buildForPlan(): TripRequest? {
+        if (destination.isBlank() || origin.isBlank()) return null
+        val start = startDate ?: LocalDate.now().plusDays(14)
+        val end = endDate ?: start.plusDays(2)
         val budget: BudgetInput = budgetAmount?.let { BudgetInput.Amount(it) }
             ?: BudgetInput.Level(budgetLevel ?: BudgetLevel.COMFORT)
+        return buildResolved(start, end, budget)
+    }
+
+    private fun buildResolved(
+        start: LocalDate,
+        end: LocalDate,
+        budget: BudgetInput
+    ): TripRequest {
         return TripRequest(
             origin = origin.trim(),
             destination = destination.trim(),
             dateRange = DateRange(start, end),
-            travelers = travelers,
+            travelers = travelers.coerceAtLeast(1),
             budget = budget,
             preferences = preferences.toSet(),
             specialNeeds = specialNeeds.trim()

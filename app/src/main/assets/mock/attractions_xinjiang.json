@@ -1,0 +1,68 @@
+[
+  {
+    "name": "天山天池",
+    "tags": ["自然风光", "休闲度假"],
+    "reason": "高山湖泊与雪山倒影，新疆经典自然景观",
+    "avoidTips": "夏季紫外线强，备防晒与外套；旺季建议提前预约门票",
+    "bestTimeSlot": "09:00-12:00",
+    "ticketPrice": 155,
+    "latitude": 43.8839,
+    "longitude": 88.1267,
+    "address": "昌吉回族自治州阜康市天池路"
+  },
+  {
+    "name": "喀纳斯湖",
+    "tags": ["自然风光"],
+    "reason": "湖光山色与图瓦村落，秋季色彩层次极佳",
+    "avoidTips": "景区面积大，建议预留整天；早晚温差大",
+    "bestTimeSlot": "08:00-11:00",
+    "ticketPrice": 160,
+    "latitude": 48.7128,
+    "longitude": 87.0394,
+    "address": "阿勒泰地区布尔津县喀纳斯景区"
+  },
+  {
+    "name": "吐鲁番葡萄沟",
+    "tags": ["自然风光", "美食探店"],
+    "reason": "葡萄园与维吾尔风情，可顺路品尝鲜果与干果",
+    "avoidTips": "夏季地表温度高，注意防暑补水",
+    "bestTimeSlot": "10:00-13:00",
+    "ticketPrice": 75,
+    "latitude": 42.9476,
+    "longitude": 89.1841,
+    "address": "吐鲁番市高昌区葡萄沟风景区"
+  },
+  {
+    "name": "新疆国际大巴扎",
+    "tags": ["历史文化", "美食探店"],
+    "reason": "乌鲁木齐地标，夜景与民族手工艺品、小吃集中",
+    "avoidTips": "人流密集时注意财物；砍价需理性",
+    "bestTimeSlot": "18:00-21:00",
+    "ticketPrice": 0,
+    "latitude": 43.7793,
+    "longitude": 87.6177,
+    "address": "乌鲁木齐市天山区解放南路8号"
+  },
+  {
+    "name": "赛里木湖",
+    "tags": ["自然风光"],
+    "reason": "高原湖泊，湖水清澈，适合自驾环湖",
+    "avoidTips": "风大且紫外线强；部分路段手机信号弱",
+    "bestTimeSlot": "09:00-12:00",
+    "ticketPrice": 70,
+    "latitude": 44.6005,
+    "longitude": 81.1724,
+    "address": "博尔塔拉蒙古自治州博乐市赛里木湖景区"
+  },
+  {
+    "name": "那拉提草原",
+    "tags": ["自然风光", "休闲度假"],
+    "reason": "空中草原与牧场景观，夏季绿草如茵",
+    "avoidTips": "景区区间车需排队，建议早到",
+    "bestTimeSlot": "08:30-11:30",
+    "ticketPrice": 95,
+    "latitude": 43.2583,
+    "longitude": 84.0214,
+    "address": "伊犁哈萨克自治州新源县那拉提旅游风景区"
+  }
+]

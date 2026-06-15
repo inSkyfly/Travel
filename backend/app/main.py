@@ -4,7 +4,7 @@ import json
 from collections.abc import Iterator
 from typing import Any
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
@@ -93,7 +93,13 @@ def chat_stream(body: ChatRequest) -> StreamingResponse:
 
 @app.post("/api/v1/plan/generate")
 def plan_generate(request: dict[str, Any]) -> dict[str, Any]:
-    return generate_plan(request)
+    try:
+        return generate_plan(request)
+    except Exception as exc:
+        raise HTTPException(
+            status_code=503,
+            detail=f"行程生成失败：{exc}",
+        ) from exc
 
 
 @app.post("/api/v1/rag/search")
